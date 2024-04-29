@@ -2,8 +2,18 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.WhatsAppClone" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/teal</item>
+        <item name="colorPrimaryVariant">@color/tealDark</item>
+        <item name="colorSecondary">@color/blue</item>
     </style>
 
     <style name="Theme.WhatsAppClone" parent="Base.Theme.WhatsAppClone" />
+
+    <style name="Theme.WhatsAppBar" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="android:title">"@strings/app_name"</item>
+        <item name="titleTextColor">@color/white</item>
+        <item name="colorPrimary">@color/tealDark</item>
+        <item name="colorPrimaryVariant">@color/teal</item>
+        <item name="android:statusBarColor">?attr/colorPrimary</item>
+    </style>
 </resources>

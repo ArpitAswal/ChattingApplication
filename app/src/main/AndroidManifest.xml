@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,8 +15,31 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WhatsAppClone"
         tools:targetApi="31">
+
         <activity
-            android:name=".MainActivity"
+            android:name=".country.CountrySelectActivity"
+            android:exported="false" />
+        <activity
+            android:name=".auth.OTPActivity"
+            android:exported="false" />
+        <activity
+            android:name=".auth.SignInActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SplashActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".WelcomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".HomeActivity"
+            android:theme="@style/Theme.WhatsAppBar"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
