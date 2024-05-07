@@ -1,10 +1,10 @@
 package com.example.whatsappclone.auth
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -14,11 +14,15 @@ import androidx.core.widget.addTextChangedListener
 import com.chaos.view.PinView
 import com.example.whatsappclone.HomeActivity
 import com.example.whatsappclone.R
+import com.example.whatsappclone.SetProfileActivity
+import com.example.whatsappclone.firebase.References
+import com.example.whatsappclone.model.SignInModel
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
+import com.google.firebase.database.DatabaseReference
 import java.util.concurrent.TimeUnit
 
 class OTPActivity : AppCompatActivity() {
@@ -113,14 +117,12 @@ class OTPActivity : AppCompatActivity() {
                 }
             }
 
-
-
-
+    @SuppressLint("SetTextI18n")
     private fun getOTP() {
         val intent = intent
         val number = intent.getStringExtra("phoneNumber")!!
         title.text = "Verify $number"
-        verifyTV.text = "$number"
+        verifyTV.text = number
         sendVerificationCode(number)
     }
 
@@ -142,11 +144,12 @@ class OTPActivity : AppCompatActivity() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    val user = auth.currentUser
                     scan.visibility = View.GONE
-                    startActivity(Intent(this, HomeActivity::class.java))
+                    val previousIntent = intent
+                    val intent = Intent(this, SetProfileActivity::class.java)
+                    intent.putExtra("phoneNumber", previousIntent.getStringExtra("phoneNumber"))
+                    startActivity(intent)
                     finish()
-
                 } else {
                     scan.visibility = View.GONE
                     Toast.makeText(this, task.exception!!.message, Toast.LENGTH_LONG)

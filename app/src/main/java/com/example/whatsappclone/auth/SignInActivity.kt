@@ -132,7 +132,7 @@ class SignInActivity : AppCompatActivity() {
     private fun showDialog(phoneNumber: String) {
         val alertDialog = AlertDialog.Builder(this)
             .setTitle("You entered the phone number")
-            .setMessage("Is this OK, or would you like to edit the number?\n\n$countryCode $phoneNumber")
+            .setMessage("Is this OK, or would you like to edit the number?\n\n$phoneNumber")
             .setPositiveButton("OK") { dialog, _ ->
                 dialog.dismiss()
                 val intent = Intent(this, OTPActivity::class.java).apply {
