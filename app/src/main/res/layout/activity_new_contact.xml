@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".contact.NewContactActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/newcontact_AppBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/newcontact_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="New contact"
+            app:titleTextColor="@color/black"
+            app:contentInsetStart="0dp"
+            app:contentInsetLeft="0dp"
+            app:contentInsetStartWithNavigation="0dp"/>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <LinearLayout
+        android:id="@+id/name_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="40dp"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@+id/newcontact_AppBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:src="@drawable/outline_person_24"/>
+
+        <EditText
+            android:id="@+id/firstnameTV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="First name"
+            android:textColor="@color/black"
+            android:backgroundTint="@color/tealDark"
+            android:layout_marginHorizontal="10dp"
+            android:paddingStart="5dp"
+            android:paddingEnd="0dp"
+            android:paddingVertical="10dp"
+            android:layout_gravity="center"
+            android:inputType="textPersonName"/>
+
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/lastnameTV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Last name"
+        android:textColor="@color/black"
+        android:backgroundTint="@color/tealDark"
+        android:layout_marginStart="62dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginTop="30dp"
+        android:paddingStart="5dp"
+        android:paddingEnd="0dp"
+        android:paddingVertical="10dp"
+        android:inputType="textPersonName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/name_layout"
+        />
+
+    <LinearLayout
+        android:id="@+id/number_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@+id/lastnameTV"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="30dp"
+        android:layout_marginHorizontal="20dp">
+
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/outline_call_24"/>
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/countryCode"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:hint="Country"
+            android:paddingVertical="10dp"
+            android:paddingHorizontal="5dp"
+            android:backgroundTint="@color/tealDark"
+            android:layout_marginHorizontal="10dp"
+            android:drawableEnd="@drawable/arrow_drop_down"
+            android:foregroundTint="@color/teal">
+
+        </com.google.android.material.textfield.TextInputEditText>
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/phoneTV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Phone"
+            android:textColor="@color/black"
+            android:layout_marginHorizontal="10dp"
+            android:paddingStart="5dp"
+            android:paddingEnd="0dp"
+            android:backgroundTint="@color/tealDark"
+            android:paddingVertical="10dp"
+            android:layout_gravity="center"
+            android:inputType="phone">
+
+        </com.google.android.material.textfield.TextInputEditText>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="0dp"
+        android:text="Add information"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textColor="@color/teal"
+        android:layout_marginTop="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/number_layout"/>
+
+    <Button
+        android:id="@+id/saveBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:textSize="18sp"
+        android:background="@drawable/elevatedbtn_shape"
+        android:layout_marginHorizontal="15dp"
+        android:paddingVertical="3dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="15dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,6 +5,7 @@
         <item name="colorPrimary">@color/teal</item>
         <item name="colorPrimaryVariant">@color/tealDark</item>
         <item name="colorSecondary">@color/blue</item>
+
     </style>
 
     <style name="Theme.WhatsAppClone" parent="Base.Theme.WhatsAppClone" />

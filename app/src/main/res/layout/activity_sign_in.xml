@@ -24,7 +24,7 @@
         android:id="@+id/menuButton"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:src="@drawable/more_vert"
+        android:src="@drawable/more_vert_black"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/titleTextView"

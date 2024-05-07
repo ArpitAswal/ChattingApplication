@@ -24,7 +24,7 @@ class CountrySelectActivity : AppCompatActivity(), CountryAdapter.ClickListener 
     private lateinit var rcv : RecyclerView
     var name = ""
     var code = ""
-
+    var flag = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_country_select)
@@ -45,7 +45,7 @@ class CountrySelectActivity : AppCompatActivity(), CountryAdapter.ClickListener 
         val resultIntent = Intent()
         resultIntent.putExtra("countryName", name) // Put your data here
         resultIntent.putExtra("countryCode", code) // Put your data here
-
+        resultIntent.putExtra("countryFlag",flag)
         // Set the result and finish the current activity
         setResult(RESULT_OK, resultIntent)
         super.onBackPressed()
@@ -55,8 +55,7 @@ class CountrySelectActivity : AppCompatActivity(), CountryAdapter.ClickListener 
     override fun onFollowClicked(country: CountryData) {
         name = country.name
         code = country.code
+        flag = country.flag
         onBackPressed()
     }
-
-
 }

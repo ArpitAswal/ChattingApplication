@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -15,7 +15,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WhatsAppClone"
         tools:targetApi="31">
-
+        <activity
+            android:name=".SetProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ChatDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".contact.NewContactActivity"
+            android:exported="false"
+            android:theme="@style/Base.Theme.WhatsAppClone" />
+        <activity
+            android:name=".contact.ContactActivity"
+            android:exported="false" />
         <activity
             android:name=".country.CountrySelectActivity"
             android:exported="false" />
@@ -39,8 +51,8 @@
             android:exported="false" />
         <activity
             android:name=".HomeActivity"
-            android:theme="@style/Theme.WhatsAppBar"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.WhatsAppBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
