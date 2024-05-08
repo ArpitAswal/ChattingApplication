@@ -38,7 +38,9 @@ class ContactAdapter(private val dataList: List<ContactSaved>) : RecyclerView.Ad
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val individualUser = dataList[position]
         if(individualUser.dp?.isNotEmpty() == true) {
-            Glide.with(holder.itemView.context).load(individualUser.dp).into(holder.profile)
+            Glide.with(holder.itemView.context)
+                .load(individualUser.dp).error(R.drawable.avatar)
+                .into(holder.profile)
         }
         if(individualUser.firstname?.isNotEmpty() == true) {
             holder.name.text = "${individualUser.firstname} ${individualUser.lastname}"
@@ -47,12 +49,12 @@ class ContactAdapter(private val dataList: List<ContactSaved>) : RecyclerView.Ad
             holder.name.text = "${individualUser.phone} (You)"
         }
 
-        if(individualUser.about?.isNotEmpty() == true){
-            holder.msg.visibility = View.VISIBLE
-            holder.msg.text = individualUser.about
+        if(individualUser.about.equals("")){
+            holder.msg.text = ""
         }
         else{
-            holder.msg.text = ""
+            holder.msg.visibility = View.VISIBLE
+            holder.msg.text = individualUser.about
         }
 
         holder.itemView.setOnClickListener {

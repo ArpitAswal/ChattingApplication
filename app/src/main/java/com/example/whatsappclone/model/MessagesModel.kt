@@ -4,15 +4,15 @@ class MessagesModel {
 
     var id: String ?= null
     var msg: String ?= null
-    var time: Long ?= null
+    var time: String ?= null
 
     constructor()  {
         id=  ""
         msg = ""
-        time = 0L
+        time = ""
     }
 
-    constructor(id: String, msg: String, time: Long){
+    constructor(id: String, msg: String, time: String){
         this.id = id
         this.msg = msg
         this.time = time

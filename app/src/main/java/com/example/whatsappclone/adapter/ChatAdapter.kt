@@ -3,7 +3,9 @@ package com.example.whatsappclone.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.whatsappclone.R
 import com.example.whatsappclone.firebase.References
@@ -38,8 +40,8 @@ class ChatAdapter(private val dataList: List<MessagesModel>) : RecyclerView.Adap
             is ViewHolderType1 -> {
                 // Bind data for ViewHolderType1
                 // For example: holder.bind(dataList[position])
-                holder.sender_msg.text = item.msg
-                holder.sender_time.text = item.time.toString()
+                holder.senderMsg.text = item.msg
+                holder.senderTime.text = item.time.toString()
             }
             is ViewHolderType2 -> {
                 // Bind data for ViewHolderType2
@@ -61,8 +63,9 @@ class ChatAdapter(private val dataList: List<MessagesModel>) : RecyclerView.Adap
 
     inner class ViewHolderType1(itemView: View) : RecyclerView.ViewHolder(itemView) {
         // ViewHolder for item_layout_type1.xml
-        val sender_msg: TextView = itemView.findViewById(R.id.sender_msg_text)
-        val sender_time: TextView = itemView.findViewById(R.id.sender_time_text)
+        var senderMsg: TextView = itemView.findViewById(R.id.sender_msg_text)
+        var senderTime: TextView = itemView.findViewById(R.id.sender_time_text)
+
     }
 
     inner class ViewHolderType2(itemView: View) : RecyclerView.ViewHolder(itemView) {

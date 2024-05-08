@@ -28,6 +28,7 @@ class SetProfileActivity : AppCompatActivity() {
     private lateinit var lastname: TextInputLayout
     private lateinit var fdb: CollectionReference
     private lateinit var fdb2: CollectionReference
+    private lateinit var fdb3: CollectionReference
     private lateinit var loading: ProgressBar
     private var imageURI : Uri? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,7 +50,7 @@ class SetProfileActivity : AppCompatActivity() {
                 val phone = number?.subSequence(3,number.length)
                 var img = ""
                 if(imageURI!=null) {
-                    val storageRef = FirebaseStorage.getInstance().reference.child("asndoa*&98wewe(^n8uf983/upload_images")
+                    val storageRef = FirebaseStorage.getInstance().reference.child(References.getCurrentUserId()).child("profile_images")
                     storageRef.putFile(imageURI!!).addOnSuccessListener {
                         val result = storageRef.downloadUrl
                         Log.i("result: ", result.toString())
@@ -84,7 +85,12 @@ class SetProfileActivity : AppCompatActivity() {
             ""
         )
         fdb.document(username).set(userSignIn).addOnSuccessListener {
-            addCurrentContact(userSignIn)
+            fdb3.document(userSignIn.userid!!).set(userSignIn).addOnSuccessListener {
+                addCurrentContact(userSignIn)
+            }.addOnFailureListener {
+                loading.visibility = View.GONE
+                Toast.makeText(this, "Failed to store user data", Toast.LENGTH_SHORT).show()
+            }
         }.addOnFailureListener {
             Toast.makeText(this, "Failed to store user data", Toast.LENGTH_SHORT).show()
             loading.visibility = View.GONE
@@ -124,7 +130,8 @@ class SetProfileActivity : AppCompatActivity() {
         lastname = findViewById(R.id.lastname)
         loading = findViewById(R.id.saving)
         fdb = References.getAllSignInUsers()
-        fdb2 = References.setCurrentContact()
+        fdb2 = References.getCurrentContact()
+        fdb3 = References.getAllContactsInfo()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

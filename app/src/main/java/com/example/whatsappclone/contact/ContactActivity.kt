@@ -35,7 +35,7 @@ class ContactActivity : AppCompatActivity() {
     }
 
     private fun getCurrentContact() {
-        val fdb: CollectionReference = References.setCurrentContact()
+        val fdb: CollectionReference = References.getCurrentContact()
         fdb.document(References.getCurrentUserId()).addSnapshotListener { value, error ->
             run {
                 if (value != null) {
@@ -93,7 +93,6 @@ class ContactActivity : AppCompatActivity() {
 
             startActivityForResult(Intent(this@ContactActivity, NewContactActivity::class.java), 101)
         }
-
     }
 
     private fun getContactsFromFDB() {
@@ -106,14 +105,15 @@ class ContactActivity : AppCompatActivity() {
                 if (value != null) {
                     for (document in value.documents) {
                         val data: ContactSaved? = document.toObject(ContactSaved::class.java)
-                        dataList.add(data!!)
+                        if(!data?.userid.equals(References.getCurrentUserId()))
+                           dataList.add(data!!)
                     }
                 }
                 if(dataList.isEmpty()){
                     dataList.add(currentContact)
                 }
                 else {
-                    dataList[0] = currentContact
+                    dataList.add(0,currentContact)
                 }
                 val adapter = ContactAdapter(dataList)
                 rcv.adapter = adapter

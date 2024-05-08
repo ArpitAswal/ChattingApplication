@@ -3,11 +3,12 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="green">#4CAF50</color>
-    <color name="lightGreen">#7DE381</color>
+    <color name="lightGreen">#DCF8C6</color>
     <color name="teal">#0b6156</color>
     <color name="tealDark">#095049</color>
     <color name="darkGreen">#016308</color>
     <color name="blue">#03A9F4</color>
     <color name="lightGrey">#FFE0E0E0</color>
     <color name="grey">#939090</color>
+    <color name="offWhite">#ECE5DD</color>
 </resources>

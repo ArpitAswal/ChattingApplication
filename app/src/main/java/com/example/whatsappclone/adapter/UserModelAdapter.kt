@@ -12,7 +12,7 @@ import com.example.whatsappclone.R
 
 class UserModelAdapter(private val dataList: List<UserModel>) : RecyclerView.Adapter<UserModelAdapter.ViewHolder>() {
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val profile: CircleImageView = itemView.findViewById(R.id.user_profile)
+        val profile: CircleImageView = itemView.findViewById(R.id.profileImage)
         val name: TextView = itemView.findViewById(R.id.username)
         val msg: TextView = itemView.findViewById(R.id.user_lastmsg)
 
