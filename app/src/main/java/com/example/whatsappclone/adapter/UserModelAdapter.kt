@@ -11,6 +11,11 @@ import de.hdodenhof.circleimageview.CircleImageView
 import com.example.whatsappclone.R
 
 class UserModelAdapter(private val dataList: List<UserModel>) : RecyclerView.Adapter<UserModelAdapter.ViewHolder>() {
+
+    private var onClickListener: OnClickListener? = null
+    fun setOnClickListener(onClickListener: OnClickListener) {
+        this.onClickListener = onClickListener
+    }
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val profile: CircleImageView = itemView.findViewById(R.id.profileImage)
         val name: TextView = itemView.findViewById(R.id.username)
@@ -35,5 +40,14 @@ class UserModelAdapter(private val dataList: List<UserModel>) : RecyclerView.Ada
         holder.name.text = individualUser.username
         holder.msg.visibility = View.VISIBLE
         holder.msg.text = individualUser.userLastMsg
+        holder.itemView.setOnClickListener {
+            if(onClickListener!=null){
+                onClickListener!!.onClick(position,individualUser)
+            }
+        }
+    }
+
+    interface OnClickListener {
+        fun onClick(position: Int, individualUser: UserModel)
     }
 }

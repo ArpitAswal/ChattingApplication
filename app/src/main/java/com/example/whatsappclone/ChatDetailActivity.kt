@@ -67,17 +67,16 @@ class ChatDetailActivity : AppCompatActivity() {
             val formattedDate = currentDate.format(dateFormatter)
             val formattedTime = currentTime.format(timeFormatter)
             if(msg.isNotEmpty()) {
-                chatsWithUserId()
                 val model = MessagesModel(
                     senderId,
                     msg,
                     formattedTime
                 )
-                rdb.child(senderId).child("$senderId $receiverId").push().setValue(model)
+                rdb.child("$senderId $receiverId").push().setValue(model)
                     .addOnSuccessListener {
                         edtMsg.text.clear()
                         if(senderId != receiverId)
-                          rdb.child(senderId).child("$receiverId $senderId").push().setValue(model).addOnSuccessListener {
+                          rdb.child("$receiverId $senderId").push().setValue(model).addOnSuccessListener {
                         }
                     }.addOnFailureListener {
 
@@ -85,7 +84,7 @@ class ChatDetailActivity : AppCompatActivity() {
             }
         }
 
-        rdb.child(senderId).child("$senderId $receiverId").addValueEventListener(object: ValueEventListener {
+        rdb.child("$senderId $receiverId").addValueEventListener(object: ValueEventListener {
 
             override fun onDataChange(snapshot: DataSnapshot) {
                 // This method is called once with the initial value and again
@@ -111,21 +110,9 @@ class ChatDetailActivity : AppCompatActivity() {
         })
     }
 
-    private fun chatsWithUserId() {
-        val id = hashMapOf(
-            "receiverId" to receiverId,
-        )
-        fdb.document("Chats_With_UserId").collection(senderId).add(id).addOnSuccessListener {
-                    chatsId.add(receiverId)
-        }.addOnFailureListener {
-              Toast.makeText(this@ChatDetailActivity, "can not add receiver ID", Toast.LENGTH_SHORT).show()
-        }
-
-    }
-
     private fun init(){
         val intent= intent
-        val username = "${intent.getStringExtra("firstName")} ${intent.getStringExtra("lastName")}"
+        val username = "${intent.getStringExtra("firstName").toString()} ${intent.getStringExtra("lastName").toString()}"
         val userDp =  intent.getStringExtra("userDP")
         receiverId = intent.getStringExtra("userId").toString()
         senderId = References.getCurrentUserId()

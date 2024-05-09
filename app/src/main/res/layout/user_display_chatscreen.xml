@@ -37,24 +37,11 @@
             android:id="@+id/user_lastmsg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="Last Msg"
             android:visibility="gone"
-            android:text="Last Message" />
+            android:maxLines="1"
+            android:ellipsize="end"/>
     </LinearLayout>
 
 
 </LinearLayout>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

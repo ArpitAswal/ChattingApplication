@@ -13,7 +13,9 @@ import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.whatsappclone.ChatDetailActivity
 import com.example.whatsappclone.R
+import com.example.whatsappclone.adapter.ContactAdapter
 import com.example.whatsappclone.adapter.UserModelAdapter
 import com.example.whatsappclone.contact.ContactActivity
 import com.example.whatsappclone.firebase.References
@@ -38,7 +40,17 @@ class Chats : Fragment() {
         rcv.adapter = adapter
         val layout = LinearLayoutManager(view.context)
         rcv.layoutManager = layout
-
+        adapter.setOnClickListener(object :
+            UserModelAdapter.OnClickListener {
+            override fun onClick(position: Int, individualUser: UserModel) {
+                val intent = Intent(view.context, ChatDetailActivity::class.java)
+                intent.putExtra("userId", individualUser.userId)
+                intent.putExtra("firstName", individualUser.username)
+                intent.putExtra("lastName", "")
+                intent.putExtra("userDP", individualUser.profileImg)
+                startActivity(intent)
+            }
+        })
         return view
     }
 
@@ -59,8 +71,10 @@ class Chats : Fragment() {
         References.receiverList.observe(viewLifecycleOwner){
                 val fdb = References.getAllContactsInfo()
                 val rdb = References.getChatsRef()
+                dataList.clear()
                 it.forEach{stringData ->
-                    fdb.whereEqualTo("userid", stringData).addSnapshotListener { value, error ->
+                    val part = stringData.split(" ")[1]
+                    fdb.whereEqualTo("userid", part).addSnapshotListener { value, error ->
                         run {
                             if (value != null) {
                                 val contact: ContactSaved = value.toObjects(ContactSaved::class.java)[0]
@@ -70,9 +84,9 @@ class Chats : Fragment() {
                                     userId = contact.userid!!,
                                     userLastMsg = ""
                                 )
-                                rdb.child(contact.userid!!).get().addOnSuccessListener { value->
+                                rdb.child(stringData).get().addOnSuccessListener { value->
                                     if(value!=null){
-                                        val firstChild = value.children.first().children.last()
+                                        val firstChild = value.children.last()
                                         val lastmsg = firstChild.child("msg").getValue(String::class.java).toString()
                                         Log.i("lastmsg", lastmsg)
                                         user.userLastMsg = lastmsg

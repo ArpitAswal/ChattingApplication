@@ -51,8 +51,9 @@ class References {
                     val list = mutableListOf<String>()
                     if(snapshot.exists() && snapshot.hasChildren()){
                         snapshot.children.forEach { doc ->
-                            Log.i("snapshot", doc.key.toString() )
-                            list.add(doc.key.toString())
+                            val part = doc.key!!.split(" ")
+                            if(part[0] == References.getCurrentUserId())
+                                list.add(doc.key.toString())
                         }
                     }
                     receiverList.postValue(list)

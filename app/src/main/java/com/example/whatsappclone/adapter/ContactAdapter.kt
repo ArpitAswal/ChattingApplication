@@ -1,8 +1,6 @@
 package com.example.whatsappclone.adapter
 
 import android.annotation.SuppressLint
-import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
