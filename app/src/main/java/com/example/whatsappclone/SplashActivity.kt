@@ -10,6 +10,7 @@ import android.view.WindowManager
 import androidx.constraintlayout.widget.ConstraintLayout
 import android.view.animation.AnimationUtils
 import com.example.whatsappclone.auth.SignInActivity
+import com.example.whatsappclone.groupchat.NewGroupActivity
 import com.google.firebase.auth.FirebaseAuth
 
 @SuppressLint("CustomSplashScreen")

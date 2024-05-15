@@ -27,7 +27,6 @@ class SetProfileActivity : AppCompatActivity() {
     private lateinit var firstname: TextInputLayout
     private lateinit var lastname: TextInputLayout
     private lateinit var fdb: CollectionReference
-    private lateinit var fdb2: CollectionReference
     private lateinit var fdb3: CollectionReference
     private lateinit var loading: ProgressBar
     private var imageURI : Uri? = null
@@ -86,38 +85,12 @@ class SetProfileActivity : AppCompatActivity() {
         )
         fdb.document(username).set(userSignIn).addOnSuccessListener {
             fdb3.document(userSignIn.userid!!).set(userSignIn).addOnSuccessListener {
-                addCurrentContact(userSignIn)
             }.addOnFailureListener {
                 loading.visibility = View.GONE
                 Toast.makeText(this, "Failed to store user data", Toast.LENGTH_SHORT).show()
             }
         }.addOnFailureListener {
             Toast.makeText(this, "Failed to store user data", Toast.LENGTH_SHORT).show()
-            loading.visibility = View.GONE
-        }
-    }
-
-
-    private fun addCurrentContact(userSignIn: ContactSaved) {
-        val number = userSignIn.phone
-        val code = number?.subSequence(0,3)
-        val phone = number?.subSequence(3,number.length)
-        val contact = ContactSaved(
-            userSignIn.userid,
-            userSignIn.firstname,
-            userSignIn.lastname,
-            "$code $phone",
-            userSignIn.dp,
-            "Message yourself"
-        )
-
-        fdb2.document(userSignIn.userid!!).set(contact).addOnSuccessListener {
-            loading.visibility = View.GONE
-            val intent = Intent(this@SetProfileActivity, HomeActivity::class.java)
-            startActivity(intent)
-            finish()
-        }.addOnFailureListener {
-            Toast.makeText(this@SetProfileActivity,"${it.message}",Toast.LENGTH_SHORT).show()
             loading.visibility = View.GONE
         }
     }
@@ -130,7 +103,6 @@ class SetProfileActivity : AppCompatActivity() {
         lastname = findViewById(R.id.lastname)
         loading = findViewById(R.id.saving)
         fdb = References.getAllSignInUsers()
-        fdb2 = References.getCurrentContact()
         fdb3 = References.getAllContactsInfo()
     }
 

@@ -12,17 +12,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.addTextChangedListener
 import com.chaos.view.PinView
-import com.example.whatsappclone.HomeActivity
 import com.example.whatsappclone.R
 import com.example.whatsappclone.SetProfileActivity
-import com.example.whatsappclone.firebase.References
-import com.example.whatsappclone.model.SignInModel
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
-import com.google.firebase.database.DatabaseReference
 import java.util.concurrent.TimeUnit
 
 class OTPActivity : AppCompatActivity() {

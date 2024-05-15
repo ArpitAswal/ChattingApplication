@@ -12,11 +12,12 @@ import de.hdodenhof.circleimageview.CircleImageView
 import com.example.whatsappclone.R
 import com.example.whatsappclone.model.ContactSaved
 
-class ContactAdapter(private val dataList: List<ContactSaved>) : RecyclerView.Adapter<ContactAdapter.ViewHolder>() {
+class NewGroupAdapter(private val dataList: List<ContactSaved>) : RecyclerView.Adapter<NewGroupAdapter.ViewHolder>() {
 
-    private var onClickListener: OnClickListener? = null
-    fun setOnClickListener(onClickListener: OnClickListener) {
-        this.onClickListener = onClickListener
+    private var checkedList = ArrayList<ContactSaved>()
+
+    fun getDataList(): ArrayList<ContactSaved> {
+        return checkedList
     }
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val profile: CircleImageView = itemView.findViewById(R.id.profileImage)
@@ -34,7 +35,7 @@ class ContactAdapter(private val dataList: List<ContactSaved>) : RecyclerView.Ad
         return dataList.size
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val individualUser = dataList[position]
         if(individualUser.dp?.isNotEmpty() == true) {
@@ -58,15 +59,16 @@ class ContactAdapter(private val dataList: List<ContactSaved>) : RecyclerView.Ad
         }
 
         holder.itemView.setOnClickListener {
-            if (onClickListener != null) {
-                onClickListener!!.onClick(position, individualUser )
+            if(checkedList.isNotEmpty() && checkedList.contains(individualUser)){
+                checkedList.remove(individualUser)
+                holder.checked.visibility = View.GONE
+            } else{
+                checkedList.add(individualUser)
+                holder.checked.visibility = View.VISIBLE
             }
+            notifyDataSetChanged()
         }
     }
 
-    // onClickListener Interface
-    interface OnClickListener {
-        fun onClick(position: Int, individualUser: ContactSaved)
-    }
 
 }

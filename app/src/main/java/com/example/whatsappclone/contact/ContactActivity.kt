@@ -14,10 +14,11 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.whatsappclone.ChatDetailActivity
+import com.example.whatsappclone.groupchat.ChatDetailActivity
 import com.example.whatsappclone.R
 import com.example.whatsappclone.adapter.ContactAdapter
 import com.example.whatsappclone.firebase.References
+import com.example.whatsappclone.groupchat.NewGroupActivity
 import com.example.whatsappclone.model.ContactSaved
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.CollectionReference
@@ -27,29 +28,12 @@ class ContactActivity : AppCompatActivity() {
 
     private lateinit var rcv: RecyclerView
     private lateinit var contact: LinearLayout
+    private lateinit var group: LinearLayout
     private lateinit var snackbar: CoordinatorLayout
     private lateinit var currentContact : ContactSaved
     override fun onStart() {
         super.onStart()
-        getCurrentContact()
-    }
-
-    private fun getCurrentContact() {
-        val fdb: CollectionReference = References.getCurrentContact()
-        fdb.document(References.getCurrentUserId()).addSnapshotListener { value, error ->
-            run {
-                if (value != null) {
-                    currentContact = value.toObject(ContactSaved::class.java)!!
-                    getContactsFromFDB()
-
-                } else if (error != null) {
-                    if (error.message?.isNotEmpty() == true) {
-                        // Handle errors
-                        Log.i("Exception", error.message.toString())
-                    }
-                }
-            }
-        }
+        getContactsFromFDB()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,6 +52,7 @@ class ContactActivity : AppCompatActivity() {
         actionBar?.setDisplayHomeAsUpEnabled(true)
         rcv = findViewById(R.id.contacts_recView)
         contact = findViewById(R.id.newcontact_layout)
+        group = findViewById(R.id.group_layout)
         snackbar = findViewById(R.id.snackbar_layout)
 
         // Retrieve message from the intent
@@ -93,6 +78,13 @@ class ContactActivity : AppCompatActivity() {
 
             startActivityForResult(Intent(this@ContactActivity, NewContactActivity::class.java), 101)
         }
+        group.setOnClickListener {
+            val layout: ConstraintLayout = findViewById(R.id.contact_activity)
+            val slideAnimation = AnimationUtils.loadAnimation(this, R.anim.slide)
+            layout.startAnimation(slideAnimation)
+
+            startActivityForResult(Intent(this@ContactActivity, NewGroupActivity::class.java), 101)
+        }
     }
 
     private fun getContactsFromFDB() {
@@ -105,14 +97,20 @@ class ContactActivity : AppCompatActivity() {
                 if (value != null) {
                     for (document in value.documents) {
                         val data: ContactSaved? = document.toObject(ContactSaved::class.java)
-                        if(!data?.userid.equals(References.getCurrentUserId()))
-                           dataList.add(data!!)
+                        if(data?.userid.equals(References.getCurrentUserId())){
+                            currentContact = data!!
+                        }
+                        else {
+                            dataList.add(data!!)
+                        }
                     }
                 }
                 if(dataList.isEmpty()){
+                    currentContact.about = "Message yourself"
                     dataList.add(currentContact)
                 }
                 else {
+                    currentContact.about = "Message yourself"
                     dataList.add(0,currentContact)
                 }
                 val adapter = ContactAdapter(dataList)

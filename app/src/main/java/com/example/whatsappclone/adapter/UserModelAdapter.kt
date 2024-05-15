@@ -9,12 +9,18 @@ import com.bumptech.glide.Glide
 import com.example.whatsappclone.model.UserModel
 import de.hdodenhof.circleimageview.CircleImageView
 import com.example.whatsappclone.R
+import com.example.whatsappclone.model.ListType
 
 class UserModelAdapter(private val dataList: List<UserModel>) : RecyclerView.Adapter<UserModelAdapter.ViewHolder>() {
 
     private var onClickListener: OnClickListener? = null
+    private var onGroupClickListener: OnGroupClickListener? = null
     fun setOnClickListener(onClickListener: OnClickListener) {
         this.onClickListener = onClickListener
+    }
+
+    fun setOnGroupClickListener(listener: OnGroupClickListener) {
+        this.onGroupClickListener = listener
     }
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val profile: CircleImageView = itemView.findViewById(R.id.profileImage)
@@ -41,13 +47,25 @@ class UserModelAdapter(private val dataList: List<UserModel>) : RecyclerView.Ada
         holder.msg.visibility = View.VISIBLE
         holder.msg.text = individualUser.userLastMsg
         holder.itemView.setOnClickListener {
-            if(onClickListener!=null){
-                onClickListener!!.onClick(position,individualUser)
+            when (individualUser.source) {
+                ListType.Individual ->  if(onClickListener!=null){
+                    onClickListener!!.onClick(position,individualUser)
+                }
+                ListType.Group ->  if(onGroupClickListener!=null){
+                    onGroupClickListener!!.onGroupClick(position,individualUser)
+                }
             }
+
+
         }
     }
 
     interface OnClickListener {
         fun onClick(position: Int, individualUser: UserModel)
     }
+
+    interface OnGroupClickListener {
+        fun onGroupClick(position: Int, individualUser: UserModel)
+    }
+
 }

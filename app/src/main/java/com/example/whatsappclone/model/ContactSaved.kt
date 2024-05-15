@@ -2,7 +2,7 @@ package com.example.whatsappclone.model
 
 import java.io.Serializable
 
-class ContactSaved {
+class ContactSaved : Serializable {
 
     var userid: String? = null
 

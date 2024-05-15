@@ -1,4 +1,4 @@
-package com.example.whatsappclone
+package com.example.whatsappclone.groupchat
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -14,15 +14,19 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.whatsappclone.HomeActivity
+import com.example.whatsappclone.R
 import com.example.whatsappclone.adapter.ChatAdapter
 import com.example.whatsappclone.firebase.References
+import com.example.whatsappclone.model.ContactSaved
 import com.example.whatsappclone.model.MessagesModel
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.getValue
-import com.google.firebase.firestore.CollectionReference
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -39,8 +43,7 @@ class ChatDetailActivity : AppCompatActivity() {
     private lateinit var edtMsg: EditText
     private lateinit var sendMsg: FrameLayout
     private lateinit var rdb: DatabaseReference
-    private lateinit var fdb: CollectionReference
-    private var chatsId = ArrayList<String>()
+    private lateinit var authUser: ContactSaved
     private var messageList = ArrayList<MessagesModel>()
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -48,11 +51,16 @@ class ChatDetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_detail)
+        CoroutineScope(Dispatchers.Main).launch {
+            // Call your suspend function within the coroutine
+            authUser = References.getCurrentAuthUserInfo()!!
+
+        }
 
         init()
-
         backBtn.setOnClickListener {
-            val intent = Intent(this@ChatDetailActivity, HomeActivity::class.java)
+            val intent = Intent(this, HomeActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             startActivity(intent)
             finish()
         }
@@ -68,7 +76,8 @@ class ChatDetailActivity : AppCompatActivity() {
             val formattedTime = currentTime.format(timeFormatter)
             if(msg.isNotEmpty()) {
                 val model = MessagesModel(
-                    senderId,
+                    "${authUser.firstname.toString()} ${authUser.lastname.toString()}",
+                    authUser.userid!!,
                     msg,
                     formattedTime
                 )
@@ -92,11 +101,12 @@ class ChatDetailActivity : AppCompatActivity() {
                 messageList.clear()
                 if(snapshot.hasChildren()){
                     for(data in snapshot.children){
+                        val owner: String? = data.child("owner").getValue(String::class.java)
                         val id: String? = data.child("id").getValue(String::class.java)
                         val msg: String? = data.child("msg").getValue(String::class.java)
                         val time: String? = data.child("time").getValue(String::class.java)
                         val messageModel = MessagesModel(
-                            id!!, msg!!, time!!
+                            owner!!, id!!, msg!!, time!!
                         )
                         messageList.add(messageModel)
                         rcv.adapter?.notifyDataSetChanged()
@@ -117,7 +127,6 @@ class ChatDetailActivity : AppCompatActivity() {
         receiverId = intent.getStringExtra("userId").toString()
         senderId = References.getCurrentUserId()
         rdb = References.getChatsRef()
-        fdb = References.getCurrentContact()
         dp = findViewById(R.id.user_profile)
         name = findViewById(R.id.user_title)
         backBtn = findViewById(R.id.leading)

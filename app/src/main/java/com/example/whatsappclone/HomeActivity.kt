@@ -12,6 +12,7 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
         References.getAllUsersChat(this@HomeActivity)
+        References.getAllGroupsChat(this@HomeActivity)
         // Find the view pager that will allow the user to swipe between fragments
         val viewPager = findViewById<ViewPager>(R.id.viewpager)
         // Create an adapter that knows which fragment should be shown on each page
