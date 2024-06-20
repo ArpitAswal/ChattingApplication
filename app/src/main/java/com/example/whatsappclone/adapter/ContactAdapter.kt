@@ -18,11 +18,11 @@ class ContactAdapter(private val dataList: List<ContactSaved>) : RecyclerView.Ad
     fun setOnClickListener(onClickListener: OnClickListener) {
         this.onClickListener = onClickListener
     }
+
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val profile: CircleImageView = itemView.findViewById(R.id.profileImage)
         val name: TextView = itemView.findViewById(R.id.username)
         val msg: TextView = itemView.findViewById(R.id.user_lastmsg)
-        val checked: ImageView = itemView.findViewById(R.id.select_contact)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

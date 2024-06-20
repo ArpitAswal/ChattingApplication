@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -40,6 +41,7 @@ class Status : Fragment() {
 
     private val capture = 1
     private val pick = 2
+    private lateinit var recent: TextView
     private lateinit var recyclerView: RecyclerView
     private lateinit var fabAddStatus: FloatingActionButton
     private lateinit var camera: FrameLayout
@@ -58,6 +60,7 @@ class Status : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_status, container, false)
 
+        recent = view.findViewById(R.id.recentStatus)
         recyclerView = view.findViewById(R.id.recyclerViewStatus)
         fabAddStatus = view.findViewById(R.id.fabAddStatus)
         bottomSheetDialog = BottomSheetDialog(view.context)
@@ -100,10 +103,9 @@ class Status : Fragment() {
                                 val currentTime = LocalTime.parse(
                                     LocalTime.now().format(timeFormatter), timeFormatter
                                 )
-                                val difference = Duration.between(uploadDateTime, currentTime).abs()
+                                val difference = Duration.between(uploadDateTime, currentTime).isNegative
 
-                                val twentyFourHours = Duration.ofHours(24)
-                                if (difference >= twentyFourHours) {
+                                if (!difference) {
                                     References.statusRemoveFromDB(status.userId)
                                 } else {
                                     if (status.userId.equals(authInfo?.userid)) {
@@ -112,6 +114,12 @@ class Status : Fragment() {
                                     } else {
                                         statusList.add(status)
                                     }
+                                }
+                                if(statusList.isNotEmpty()){
+                                    recent.visibility = View.VISIBLE
+                                }
+                                else{
+                                    recent.visibility = View.GONE
                                 }
                             }
                         } catch (e: Exception) {

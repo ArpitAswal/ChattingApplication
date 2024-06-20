@@ -166,5 +166,10 @@ class References {
             fdb.document(userId!!).delete()
         }
 
+        fun getAllCallingInfo(): CollectionReference {
+            val database = FirebaseFirestore.getInstance()
+            fdb = database.collection("All_Calling_Info").document(References.getCurrentUserId()).collection("UserCalls")
+            return fdb
+        }
     }
 }
