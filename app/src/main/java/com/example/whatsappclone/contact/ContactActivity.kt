@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -30,7 +31,7 @@ class ContactActivity : AppCompatActivity() {
     private lateinit var contact: LinearLayout
     private lateinit var group: LinearLayout
     private lateinit var snackbar: CoordinatorLayout
-    private lateinit var currentContact : ContactSaved
+    private lateinit var currentContact: ContactSaved
     override fun onStart() {
         super.onStart()
         getContactsFromFDB()
@@ -57,18 +58,34 @@ class ContactActivity : AppCompatActivity() {
 
         // Retrieve message from the intent
         val message = intent.getStringExtra("message")
-
+        val contactID = intent.getStringExtra("newContactID")
         // Display the Snackbar
         message?.let {
-            Snackbar.make(
+            val snackBar = Snackbar.make(
                 snackbar,
                 it,
-                Snackbar.LENGTH_SHORT
+                Snackbar.LENGTH_LONG
             ).setAction(
                 "UNDO", View.OnClickListener {
-                    Toast.makeText(this@ContactActivity, "The contact did not saved", Toast.LENGTH_SHORT).show();
+                    References.removeNewContact(contactID!!) { success ->
+                        if (success) {
+                            Toast.makeText(
+                                this@ContactActivity,
+                                "The contact does not saved",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            Toast.makeText(
+                                this@ContactActivity,
+                                "The contact does not undo",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
                 }
-            ).setDuration(2000).show()
+            ).setDuration(2000)
+
+            snackBar.show()
         }
 
         contact.setOnClickListener {
@@ -76,7 +93,10 @@ class ContactActivity : AppCompatActivity() {
             val slideAnimation = AnimationUtils.loadAnimation(this, R.anim.slide)
             layout.startAnimation(slideAnimation)
 
-            startActivityForResult(Intent(this@ContactActivity, NewContactActivity::class.java), 101)
+            startActivityForResult(
+                Intent(this@ContactActivity, NewContactActivity::class.java),
+                101
+            )
         }
         group.setOnClickListener {
             val layout: ConstraintLayout = findViewById(R.id.contact_activity)
@@ -91,35 +111,40 @@ class ContactActivity : AppCompatActivity() {
 
         val fdb: CollectionReference = References.getAllContactsInfo()
 
-        fdb.orderBy("firstname", Query.Direction.ASCENDING).orderBy("lastname", Query.Direction.ASCENDING)
-            .addSnapshotListener{ value,error-> run {
-                val dataList = mutableListOf<ContactSaved>()
-                if (value != null) {
-                    for (document in value.documents) {
-                        val data: ContactSaved? = document.toObject(ContactSaved::class.java)
-                        if(data?.userid.equals(References.getCurrentUserId())){
-                            currentContact = data!!
-                        }
-                        else {
-                            dataList.add(data!!)
+        fdb.orderBy("firstname", Query.Direction.ASCENDING)
+            .orderBy("lastname", Query.Direction.ASCENDING)
+            .addSnapshotListener { value, error ->
+                run {
+                    val dataList = mutableListOf<ContactSaved>()
+                    if (value != null) {
+                        for (document in value.documents) {
+                            val data: ContactSaved? = document.toObject(ContactSaved::class.java)
+                            if (data?.userid.equals(References.getCurrentUserId())) {
+                                currentContact = data!!
+                            } else {
+                                dataList.add(data!!)
+                            }
                         }
                     }
-                }
-                if(dataList.isEmpty()){
-                    currentContact.about = "Message yourself"
-                    dataList.add(currentContact)
-                }
-                else {
-                    currentContact.about = "Message yourself"
-                    dataList.add(0,currentContact)
-                }
-                val adapter = ContactAdapter(dataList)
-                rcv.adapter = adapter
-                rcv.layoutManager = LinearLayoutManager(this)
-                adapter.setOnClickListener(object :
+                    if (dataList.isEmpty()) {
+                        currentContact.lastname = "${currentContact.lastname} (You)"
+                        currentContact.about = "Message yourself"
+                        currentContact.lastname!!.trim()
+                        dataList.add(currentContact)
+                    } else {
+                        currentContact.lastname = "${currentContact.lastname} (You)"
+                        currentContact.about = "Message yourself"
+                        currentContact.lastname!!.trim()
+                        dataList.add(0, currentContact)
+                    }
+                    val adapter = ContactAdapter(dataList)
+                    rcv.adapter = adapter
+                    rcv.layoutManager = LinearLayoutManager(this)
+                    adapter.setOnClickListener(object :
                         ContactAdapter.OnClickListener {
                         override fun onClick(position: Int, individualUser: ContactSaved) {
-                            val intent = Intent(this@ContactActivity, ChatDetailActivity::class.java)
+                            val intent =
+                                Intent(this@ContactActivity, ChatDetailActivity::class.java)
                             intent.putExtra("userId", individualUser.userid)
                             intent.putExtra("firstName", individualUser.firstname)
                             intent.putExtra("lastName", individualUser.lastname)
@@ -128,20 +153,22 @@ class ContactActivity : AppCompatActivity() {
                             finish()
                         }
                     })
-               if (error != null) {
-                    if (error.message?.isNotEmpty() == true) {
-                        // Handle errors
-                        Log.i("Exception", error.message.toString())
+                    if (error != null) {
+                        if (error.message?.isNotEmpty() == true) {
+                            // Handle errors
+                            Log.i("Exception", error.message.toString())
+                        }
                     }
                 }
             }
-    }}
+    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_search -> {
                 // Handle search action
-                Toast.makeText(this@ContactActivity, "Search Item Clicked", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ContactActivity, "Search Item Clicked", Toast.LENGTH_SHORT)
+                    .show()
                 true
             }
 
@@ -150,11 +177,13 @@ class ContactActivity : AppCompatActivity() {
                 Toast.makeText(this@ContactActivity, "More Item Clicked", Toast.LENGTH_SHORT).show()
                 true
             }
+
             android.R.id.home -> {
                 // Handle clicks on the leading icon (e.g., navigate back)
                 onBackPressed()
                 return true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }

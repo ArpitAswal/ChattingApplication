@@ -124,7 +124,6 @@
                 android:layout_gravity="center"
                 android:padding="6dp">
 
-
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -158,20 +157,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            tools:listitem="@layout/user_display_chatscreen"/>
+            tools:listitem="@layout/whatsapp_contacts_display"/>
 
             <!--this layout makes the floating action button to raise up
        whenever the snackbar pops up from bottom-->
-            <androidx.coordinatorlayout.widget.CoordinatorLayout
-                android:id="@+id/snackbar_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|center_horizontal"/>
+
             <!-- android:layout_alignParentStart="true"
              android:layout_alignParentBottom="true" -->
         </LinearLayout>
 
     </ScrollView>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/snackbar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

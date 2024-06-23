@@ -142,19 +142,24 @@ class SignInActivity : AppCompatActivity() {
             }
             .setNegativeButton("EDIT") { dialog, _ -> dialog.dismiss() }
             .create()
+
+        alertDialog.setCancelable(false)
         alertDialog.show()
     }
     private fun showDialog2() {
         AlertDialog.Builder(this)
+            .setCancelable(false)
             .setTitle("Warning")
             .setMessage("The phone number you entered is too short for the country: $countryName.\nInclude your area code if you have not")
             .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
             .create()
             .show()
+
     }
 
     private fun showDialog3() {
         AlertDialog.Builder(this)
+            .setCancelable(false)
             .setTitle("Warning")
             .setMessage("The phone number you entered is too long for the country: $countryName")
             .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }

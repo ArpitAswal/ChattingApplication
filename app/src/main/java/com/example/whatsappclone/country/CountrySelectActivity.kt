@@ -2,6 +2,7 @@ package com.example.whatsappclone.country
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -57,5 +58,16 @@ class CountrySelectActivity : AppCompatActivity(), CountryAdapter.ClickListener 
         code = country.code
         flag = country.flag
         onBackPressed()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                // Handle the leading back arrow click event
+                onBackPressed()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

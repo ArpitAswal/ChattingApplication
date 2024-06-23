@@ -97,9 +97,9 @@ class CallingActivity : AppCompatActivity() {
         val dateFormat = SimpleDateFormat("d MMM, h:mm a", Locale.getDefault())
         val time = dateFormat.format(calendar.time)
         val fdb = References.getAllCallingInfo()
-        for(i in 1..selectedContacts.size) {
+        for(i in 0..<selectedContacts.size) {
             val uniqueCallId = UUID.randomUUID().toString()
-            val contact = selectedContacts[i-1]
+            val contact = selectedContacts[i]
             val callData = CallModel(
                 contact.firstname!!,
                 contact.userid!!,
@@ -164,7 +164,6 @@ class CallingActivity : AppCompatActivity() {
                             )
                         }
                         rcv.adapter?.notifyDataSetChanged()
-                        noOfCont.text = "Add up to ${value.documents.size} people"
                     }
                     if (error != null) {
                         if (error.message?.isNotEmpty() == true) {

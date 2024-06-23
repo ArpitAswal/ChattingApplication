@@ -24,6 +24,7 @@ import com.example.whatsappclone.model.GroupModel
 import com.example.whatsappclone.model.ListType
 import com.example.whatsappclone.model.UserModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.Timestamp
 
 class Chats : Fragment() {
     private var dataList = mutableListOf<UserModel>()
@@ -103,7 +104,8 @@ class Chats : Fragment() {
                             username = "${contact.firstname} ${contact.lastname}",
                             userId = contact.userid!!,
                             userLastMsg = "",
-                            source = ListType.Individual
+                            source = ListType.Individual,
+                            chatTime = ""
                         )
 
                         rdb.child(stringData).get().addOnSuccessListener { chatSnapshot ->
@@ -112,6 +114,7 @@ class Chats : Fragment() {
                                 val lastMsg =
                                     firstChild.child("msg").getValue(String::class.java).toString()
                                 user.userLastMsg = lastMsg
+                                user.chatTime = firstChild.child("time").getValue(String::class.java)!!
                                 receiverDataList.add(user) // Add the updated user to the receiverDataList
                                 mediatorLiveData.value =
                                     receiverDataList // Update mediatorLiveData with the new list
@@ -142,7 +145,8 @@ class Chats : Fragment() {
                                 userId = groupModel.groupId!!,
                                 username = groupModel.groupName!!,
                                 userLastMsg = "",
-                                source = ListType.Group
+                                source = ListType.Group,
+                                chatTime = ""
                             )
 
                             rdb.child(stringData).get().addOnSuccessListener { chatSnapshot ->
@@ -152,6 +156,7 @@ class Chats : Fragment() {
                                         firstChild.child("msg").getValue(String::class.java)
                                             .toString()
                                     user.userLastMsg = lastMsg
+                                    user.chatTime = firstChild.child("time").getValue(String::class.java)!!
                                     groupsDataList.add(user) // Add the updated user to the groupsDataList
                                     mediatorLiveData.value =
                                         groupsDataList // Update mediatorLiveData with the new list
@@ -174,108 +179,3 @@ class Chats : Fragment() {
     }
 }
 
-
-/*
-        References.receiverList.observe(viewLifecycleOwner) {
-            val fdb = References.getAllContactsInfo()
-            val rdb = References.getChatsRef()
-            dataList.clear()
-            it.forEach { stringData ->
-                val part = stringData.split(" ")[1]
-                fdb.whereEqualTo("userid", part).addSnapshotListener { value, error ->
-                    run {
-                        if (value != null) {
-                            val contact: ContactSaved = value.toObjects(ContactSaved::class.java)[0]
-                            val user = UserModel(
-                                profileImg = contact.dp!!,
-                                username = "${contact.firstname} ${contact.lastname}",
-                                userId = contact.userid!!,
-                                userLastMsg = ""
-                            )
-                            rdb.child(stringData).get().addOnSuccessListener { value ->
-                                if (value != null) {
-                                    val firstChild = value.children.last()
-                                    val lastmsg =
-                                        firstChild.child("msg").getValue(String::class.java)
-                                            .toString()
-                                    Log.i("lastmsg", lastmsg)
-                                    user.userLastMsg = lastmsg
-                                    dataList.add(user)
-                                    rcv.adapter?.notifyDataSetChanged()
-                                }
-                            }
-                        } else if (error != null) {
-                            Toast.makeText(
-                                view.context,
-                                error.message.toString(),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
-                }
-            }
-
-        }
-
-        References.groupsList.observe(viewLifecycleOwner) {
-            val fdb = References.getAllGroupsInfo()
-            val rdb = References.getGroupRef()
-            dataList.clear()
-            it.forEach { stringData ->
-                fdb.document(stringData).get().addOnSuccessListener { document ->
-                    if (document != null && document.exists()) {
-                        // Convert Firestore document to your data model
-                        val groupModel = document.toObject(GroupModel::class.java)
-                        // Handle retrieved data
-                        if (groupModel != null) {
-                            // Handle the retrieved group data
-                            val user = UserModel(
-                                profileImg = groupModel.groupProfile!!,
-                                userId = groupModel.groupId!!,
-                                username = groupModel.groupName!!,
-                                userLastMsg = ""
-                            )
-
-                            rdb.child(stringData).get().addOnSuccessListener { value ->
-                                if (value != null) {
-                                    val firstChild = value.children.last()
-                                    val lastmsg =
-                                        firstChild.child("msg").getValue(String::class.java)
-                                            .toString()
-                                    Log.i("lastmsg", lastmsg)
-                                    user.userLastMsg = lastmsg
-                                    dataList.add(user)
-                                    rcv.adapter?.notifyDataSetChanged()
-                                }
-                            }
-                        } else {
-                            // Document doesn't exist or couldn't be converted to GroupModel
-                            Toast.makeText(
-                                view.context,
-                                "Document doesn't exist or couldn't be converted to GroupModel",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    } else {
-                        // Document doesn't exist or there was an error fetching the document
-                        Toast.makeText(
-                            view.context,
-                            "Document doesn't exist or there was an error fetching the document",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-                    .addOnFailureListener { exception: Exception ->
-                        // Handle any errors
-                        Toast.makeText(
-                            view.context,
-                            exception.message.toString(),
-                            Toast.LENGTH_SHORT
-                        ).show()
-
-                    }
-
-            }
-        }
-
-        */

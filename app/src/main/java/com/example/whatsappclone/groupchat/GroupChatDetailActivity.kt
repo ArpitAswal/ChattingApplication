@@ -21,6 +21,7 @@ import com.example.whatsappclone.firebase.References
 import com.example.whatsappclone.model.ContactSaved
 import com.example.whatsappclone.model.GroupModel
 import com.example.whatsappclone.model.MessagesModel
+import com.google.firebase.Timestamp
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -29,8 +30,9 @@ import com.google.firebase.firestore.CollectionReference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 
 class GroupChatDetailActivity : AppCompatActivity() {
@@ -56,20 +58,34 @@ class GroupChatDetailActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.Main).launch {
             // Call your suspend function within the coroutine
             authUser = References.getCurrentAuthUserInfo()!!
-
+            val currentTime = Calendar.getInstance().time // Current time as Date object
+            val dateFormat = SimpleDateFormat("dd MMMM yyyy 'at' HH:mm:ss 'UTC'XXX", Locale.getDefault())
+            val timestamp = dateFormat.format(currentTime)
+            val model = MessagesModel(
+                "${authUser.firstname.toString()} ${authUser.lastname.toString()}",
+                authUser.userid!!,
+                "",
+                timestamp
+            )
+            rdb.child(grpId).push().setValue(model)
         }
         init()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onStart() {
+        super.onStart()
         msgSend.setOnClickListener {
             val msg = editMsg.text.toString()
-            val currentTime = LocalTime.now()
-            val timeFormatter = DateTimeFormatter.ofPattern("HH:mm a")
-            val formattedTime = currentTime.format(timeFormatter)
+            val currentTime = Calendar.getInstance().time // Current time as Date object
+            val dateFormat = SimpleDateFormat("dd MMMM yyyy 'at' HH:mm:ss 'UTC'XXX", Locale.getDefault())
+            val timestamp = dateFormat.format(currentTime)
             if (msg.isNotEmpty()) {
                 val model = MessagesModel(
                     "${authUser.firstname.toString()} ${authUser.lastname.toString()}",
                     authUser.userid!!,
                     msg,
-                    formattedTime
+                    timestamp
                 )
                 rdb.child(grpId).push().setValue(model)
                     .addOnSuccessListener {
@@ -118,6 +134,7 @@ class GroupChatDetailActivity : AppCompatActivity() {
     }
 
     private fun init() {
+        rdb = References.getGroupRef()
         groupName = findViewById(R.id.group_title)
         groupMembersName = findViewById(R.id.group_subtitle)
         groupDp = findViewById(R.id.groupDp)
@@ -160,29 +177,32 @@ class GroupChatDetailActivity : AppCompatActivity() {
                         }
                     }
                     names = names.trim()
-                    names = names.subSequence(0,names.length-1).toString()
+                    names = names.subSequence(0, names.length - 1).toString()
                     groupMembersName.text = names
-                    getChats()
                 }
             }
         } else {
             membersList = selected
             for (users in membersList) {
                 names += if (users.userid == References.getCurrentUserId()) {
-                    "You"
+                    "You, "
                 } else {
-                    ", ${users.firstname}"
+                    "${users.firstname}, "
                 }
             }
+            names = names.trim()
+            names = names.subSequence(0, names.length - 1).toString()
+            groupMembersName.text = names
         }
+
         editMsg = findViewById(R.id.groupEdit_message)
         msgSend = findViewById(R.id.groupSend_btn)
         rcv = findViewById(R.id.groupchat_recview)
         val adapter = GroupChatAdapter(messageList)
         rcv.adapter = adapter
         rcv.layoutManager = LinearLayoutManager(this)
-        rdb = References.getGroupRef()
         leadingBtn = findViewById(R.id.group_leading_icon)
+        getChats()
     }
 
     override fun onBackPressed() {

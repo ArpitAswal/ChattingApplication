@@ -8,6 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.whatsappclone.R
 import com.example.whatsappclone.firebase.References
 import com.example.whatsappclone.model.MessagesModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class ChatAdapter(private val dataList: List<MessagesModel>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -34,29 +37,29 @@ class ChatAdapter(private val dataList: List<MessagesModel>) : RecyclerView.Adap
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = dataList[position]
+        val formatTime = formattedTime(item.time!!)
         when (holder) {
             is ViewHolderType1 -> {
                 // Bind data for ViewHolderType1
                 // For example: holder.bind(dataList[position])
                 holder.senderMsg.text = item.msg
-                holder.senderTime.text = item.time.toString()
+                holder.senderTime.text = formatTime
             }
             is ViewHolderType2 -> {
                 // Bind data for ViewHolderType2
                 // For example: holder.bind(dataList[position])
-                holder.receiver_msg.text = item.msg
-                holder.receiver_time.text = item.time.toString()
+                holder.receiverMsg.text = item.msg
+                holder.receiverTime.text = formatTime
             }
         }
     }
 
     override fun getItemViewType(position: Int): Int {
         // Return view type based on position or data condition
-       if(dataList[position].id.equals(References.getCurrentUserId())){
-           return VIEW_TYPE_ONE
-       }
-        else
-            return VIEW_TYPE_TWO
+        return if(dataList[position].id.equals(References.getCurrentUserId())){
+            VIEW_TYPE_ONE
+        } else
+            VIEW_TYPE_TWO
     }
 
     inner class ViewHolderType1(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -68,9 +71,15 @@ class ChatAdapter(private val dataList: List<MessagesModel>) : RecyclerView.Adap
 
     inner class ViewHolderType2(itemView: View) : RecyclerView.ViewHolder(itemView) {
         // ViewHolder for item_layout_type2.xml
-        val receiver_msg: TextView = itemView.findViewById(R.id.receiver_msg_text)
-        val receiver_time: TextView = itemView.findViewById(R.id.receiver_time_text)
+        val receiverMsg: TextView = itemView.findViewById(R.id.receiver_msg_text)
+        val receiverTime: TextView = itemView.findViewById(R.id.receiver_time_text)
     }
 
+    private fun formattedTime(date: String): String {
+        val inputFormat = SimpleDateFormat("dd MMMM yyyy 'at' HH:mm:ss 'UTC'XXX", Locale.getDefault())
+        val format = inputFormat.parse(date)
+        val outputFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
+        return outputFormat.format(format!!)
+    }
 
 }

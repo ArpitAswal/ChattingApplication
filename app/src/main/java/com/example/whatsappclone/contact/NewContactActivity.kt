@@ -60,7 +60,7 @@ class NewContactActivity : AppCompatActivity() {
     }
 
     private fun saveClicked() {
-        val id = randomReceiverUserId(28)
+        val id = randomReceiverUserId()
         val number = code.text.split("+")[1]
         val contact = ContactSaved(
             id,
@@ -77,6 +77,10 @@ class NewContactActivity : AppCompatActivity() {
                     "message",
                     "${firstname.text}${lastname.text} was added to your contacts"
                 )
+                intent.putExtra(
+                    "newContactID",
+                    id
+                )
                 startActivity(intent)
                 finish()
             }
@@ -84,10 +88,10 @@ class NewContactActivity : AppCompatActivity() {
 
     }
 
-    private fun randomReceiverUserId(length: Int): String {
+    private fun randomReceiverUserId(): String {
         val allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
         val random = Random()
-        return (1..length)
+        return (1..28)
             .map { allowedChars[random.nextInt(allowedChars.length)] }
             .joinToString("")
     }

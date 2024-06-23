@@ -1,6 +1,5 @@
 package com.example.whatsappclone.firebase
 
-import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import com.example.whatsappclone.HomeActivity
@@ -145,12 +144,21 @@ class References {
         fun addNewContact(contact: ContactSaved, callback: (Boolean) -> Unit) {
             this.contact = contact
             fdb = getAllContactsInfo()
-            fdb.document(contact.userid!!).set(contact).addOnSuccessListener { documentReference ->
-                Log.d("Document", "DocumentSnapshot added with ID: $documentReference")
+            fdb.document(contact.userid!!).set(contact).addOnSuccessListener {
                 callback(true)
             }
-                .addOnFailureListener { e ->
-                    Log.w("Document", "Error adding document", e)
+                .addOnFailureListener {
+                    callback(false)
+                }
+        }
+
+        fun removeNewContact(contactId: String , callback: (Boolean) -> Unit){
+            fdb = getAllContactsInfo()
+            fdb.document(contactId).delete()
+                .addOnSuccessListener {
+                    callback(true)
+            }
+                .addOnFailureListener {
                     callback(false)
                 }
         }
@@ -168,7 +176,7 @@ class References {
 
         fun getAllCallingInfo(): CollectionReference {
             val database = FirebaseFirestore.getInstance()
-            fdb = database.collection("All_Calling_Info").document(References.getCurrentUserId()).collection("UserCalls")
+            fdb = database.collection("All_Calling_Info").document(getCurrentUserId()).collection("UserCalls")
             return fdb
         }
     }

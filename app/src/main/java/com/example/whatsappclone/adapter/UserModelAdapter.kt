@@ -10,6 +10,10 @@ import com.example.whatsappclone.model.UserModel
 import de.hdodenhof.circleimageview.CircleImageView
 import com.example.whatsappclone.R
 import com.example.whatsappclone.model.ListType
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 class UserModelAdapter(private val dataList: List<UserModel>) : RecyclerView.Adapter<UserModelAdapter.ViewHolder>() {
 
@@ -26,7 +30,7 @@ class UserModelAdapter(private val dataList: List<UserModel>) : RecyclerView.Ada
         val profile: CircleImageView = itemView.findViewById(R.id.profileImage)
         val name: TextView = itemView.findViewById(R.id.username)
         val msg: TextView = itemView.findViewById(R.id.user_lastmsg)
-
+        val chatTime: TextView = itemView.findViewById(R.id.dateTimeTV)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -46,6 +50,7 @@ class UserModelAdapter(private val dataList: List<UserModel>) : RecyclerView.Ada
         holder.name.text = individualUser.username
         holder.msg.visibility = View.VISIBLE
         holder.msg.text = individualUser.userLastMsg
+        holder.chatTime.text = formattedDate(individualUser.chatTime)
         holder.itemView.setOnClickListener {
             when (individualUser.source) {
                 ListType.Individual ->  if(onClickListener!=null){
@@ -55,8 +60,6 @@ class UserModelAdapter(private val dataList: List<UserModel>) : RecyclerView.Ada
                     onGroupClickListener!!.onGroupClick(position,individualUser)
                 }
             }
-
-
         }
     }
 
@@ -68,4 +71,24 @@ class UserModelAdapter(private val dataList: List<UserModel>) : RecyclerView.Ada
         fun onGroupClick(position: Int, individualUser: UserModel)
     }
 
+
+    private fun formattedDate(dateString: String): String? {
+        try {
+            // Define the input date format
+            val inputFormat = SimpleDateFormat("dd MMMM yyyy 'at' HH:mm:ss 'UTC'XXX", Locale.getDefault())
+            inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+
+            // Parse the input date string
+            val date: Date? = inputFormat.parse(dateString)
+
+            // Define the output date format
+            val outputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+            // Format the parsed date into the desired format
+            return date?.let { outputFormat.format(it) }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
 }

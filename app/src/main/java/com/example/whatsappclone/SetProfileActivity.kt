@@ -52,7 +52,6 @@ class SetProfileActivity : AppCompatActivity() {
                     val storageRef = FirebaseStorage.getInstance().reference.child(References.getCurrentUserId()).child("profile_images")
                     storageRef.putFile(imageURI!!).addOnSuccessListener {
                         val result = storageRef.downloadUrl
-                        Log.i("result: ", result.toString())
                         result.addOnSuccessListener {
                             img = it.toString()
                             contactSaved(username, code, phone, img)
@@ -60,11 +59,10 @@ class SetProfileActivity : AppCompatActivity() {
                     }.addOnFailureListener {
                         Toast.makeText(
                             this,
-                            "Image does not Uploaded",
+                            "Image does not Stored the reason is: ${it.message.toString()}",
                             Toast.LENGTH_SHORT
                         ).show()
                         loading.visibility = View.GONE
-                        Log.i("result: ", "FailureListener")
                     }
                 }
                 else{
@@ -85,13 +83,19 @@ class SetProfileActivity : AppCompatActivity() {
         )
         fdb.document(username).set(userSignIn).addOnSuccessListener {
             fdb3.document(userSignIn.userid!!).set(userSignIn).addOnSuccessListener {
+                loading.visibility = View.GONE
+                val intent = Intent(this@SetProfileActivity, HomeActivity::class.java)
+                startActivity(intent)
+                finish()
             }.addOnFailureListener {
                 loading.visibility = View.GONE
+                Log.i("failure exception:", "${it.message.toString()}")
                 Toast.makeText(this, "Failed to store user data", Toast.LENGTH_SHORT).show()
             }
         }.addOnFailureListener {
-            Toast.makeText(this, "Failed to store user data", Toast.LENGTH_SHORT).show()
             loading.visibility = View.GONE
+            Toast.makeText(this, "Failed to store user data", Toast.LENGTH_SHORT).show()
+            Log.i("failure exception:", "${it.message.toString()}")
         }
     }
 

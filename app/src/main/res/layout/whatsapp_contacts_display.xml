@@ -3,40 +3,38 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/chatbox_layout"
+    android:id="@+id/contactBox_layout"
     android:orientation="horizontal">
 
     <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        >
+        android:layout_marginStart="5dp">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/profileImage"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginStart="5dp"
-        android:padding="5dp"
-        android:src="@drawable/avatar"
-        app:civ_border_color="@color/white"
-        app:civ_border_width="1.5dp" />
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profileImage"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="5dp"
+            android:padding="5dp"
+            android:src="@drawable/avatar"
+            app:civ_border_color="@color/white"
+            app:civ_border_width="1.5dp" />
 
-    <ImageView
-        android:id="@+id/select_contact"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/check_circle"
-        android:visibility="gone"
-        android:layout_gravity="end|bottom">
+        <ImageView
+            android:id="@+id/select_contact"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/check_circle"
+            android:visibility="gone"
+            android:layout_gravity="end|bottom">
 
-    </ImageView>
+        </ImageView>
 
     </FrameLayout>
 
     <LinearLayout
-        android:layout_width="0dp"
-        android:layout_weight="1"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_marginHorizontal="8dp"
         android:gravity="center"
@@ -50,7 +48,6 @@
             android:paddingBottom="5dp"
             android:text="User Name"
             android:textSize="16sp"
-            android:textColor="@color/black"
             android:textStyle="bold" />
 
         <TextView
@@ -64,13 +61,4 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/dateTimeTV"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="23/06/2024"
-        android:layout_marginTop="8dp"
-        android:textColor="@color/black"
-        android:textSize="13sp"
-        android:layout_marginEnd="10dp"/>
 </LinearLayout>

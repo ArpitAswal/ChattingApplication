@@ -20,6 +20,7 @@ import com.example.whatsappclone.adapter.ChatAdapter
 import com.example.whatsappclone.firebase.References
 import com.example.whatsappclone.model.ContactSaved
 import com.example.whatsappclone.model.MessagesModel
+import com.google.firebase.Timestamp
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -27,10 +28,9 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class ChatDetailActivity : AppCompatActivity() {
 
@@ -67,19 +67,15 @@ class ChatDetailActivity : AppCompatActivity() {
 
         sendMsg.setOnClickListener {
             val msg = edtMsg.text.toString()
-            val currentDate = LocalDate.now()
-            val currentDay = currentDate.dayOfWeek
-            val currentTime = LocalTime.now()
-            val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-            val timeFormatter = DateTimeFormatter.ofPattern("HH:mm a")
-            val formattedDate = currentDate.format(dateFormatter)
-            val formattedTime = currentTime.format(timeFormatter)
+            val currentTime = Calendar.getInstance().time // Current time as Date object
+            val dateFormat = SimpleDateFormat("dd MMMM yyyy 'at' HH:mm:ss 'UTC'XXX", Locale.getDefault())
+            val timestamp = dateFormat.format(currentTime)
             if(msg.isNotEmpty()) {
                 val model = MessagesModel(
                     "${authUser.firstname.toString()} ${authUser.lastname.toString()}",
                     authUser.userid!!,
                     msg,
-                    formattedTime
+                    timestamp
                 )
                 rdb.child("$senderId $receiverId").push().setValue(model)
                     .addOnSuccessListener {
@@ -88,7 +84,6 @@ class ChatDetailActivity : AppCompatActivity() {
                           rdb.child("$receiverId $senderId").push().setValue(model).addOnSuccessListener {
                         }
                     }.addOnFailureListener {
-
                     }
             }
         }

@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -27,15 +28,15 @@ import com.example.whatsappclone.model.ContactSaved
 import com.example.whatsappclone.model.StatusModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.time.Duration
+import java.util.Calendar
 
 class Status : Fragment() {
 
@@ -96,16 +97,14 @@ class Status : Fragment() {
                     statusList.clear()
                     value.documents.forEach { document ->
                         try {
+                            val currentTime = Calendar.getInstance().time
                             val status = document.toObject(StatusModel::class.java)
                             if (status != null) {
-                                val timeFormatter = DateTimeFormatter.ofPattern("HH:mm a")
-                                val uploadDateTime = LocalTime.parse(status.time, timeFormatter)
-                                val currentTime = LocalTime.parse(
-                                    LocalTime.now().format(timeFormatter), timeFormatter
-                                )
-                                val difference = Duration.between(uploadDateTime, currentTime).isNegative
-
-                                if (!difference) {
+                                val statusTime = status.time!!.toDate()
+                                val differenceInMillis = currentTime.time - statusTime.time
+                                val hoursDifference = differenceInMillis / (1000 * 60 * 60)
+                                if (hoursDifference >= 24) {
+                                    Glide.with(view.context).load(authInfo?.dp).error(R.drawable.avatar).into(authDp)
                                     References.statusRemoveFromDB(status.userId)
                                 } else {
                                     if (status.userId.equals(authInfo?.userid)) {
@@ -115,10 +114,9 @@ class Status : Fragment() {
                                         statusList.add(status)
                                     }
                                 }
-                                if(statusList.isNotEmpty()){
+                                if (statusList.isNotEmpty()) {
                                     recent.visibility = View.VISIBLE
-                                }
-                                else{
+                                } else {
                                     recent.visibility = View.GONE
                                 }
                             }
@@ -130,7 +128,6 @@ class Status : Fragment() {
                     statusAdapter.notifyDataSetChanged()
                 }
             }
-
 
         }
 
@@ -173,22 +170,22 @@ class Status : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
-            val currentTime = LocalTime.now()
-            val timeFormatter = DateTimeFormatter.ofPattern("HH:mm a")
-            val formattedTime = currentTime.format(timeFormatter)
+            val currentTime = Calendar.getInstance().time // Current time as Date object
+            val timestamp = Timestamp(currentTime)
+
             when (requestCode) {
                 capture -> {
                     val imageBitmap = data?.extras?.get("data") as Bitmap
-                    authDp.setImageBitmap(imageBitmap)
+                    //authDp.setImageBitmap(imageBitmap)
                     // Do something with the captured image bitmap
-                    uploadBitmapToFirebase(imageBitmap, formattedTime)
+                    uploadBitmapToFirebase(imageBitmap, timestamp)
                 }
 
                 pick -> {
                     val selectedImageUri = data?.data
                     if (selectedImageUri != null) {
-                        authDp.setImageURI(selectedImageUri)
-                        uploadImageToFirebase(selectedImageUri, formattedTime)
+                        //authDp.setImageURI(selectedImageUri)
+                        uploadImageToFirebase(selectedImageUri, timestamp)
                     }
                 }
             }
@@ -196,7 +193,7 @@ class Status : Fragment() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun uploadImageToFirebase(imageUri: Uri, statusTime: String) {
+    private fun uploadImageToFirebase(imageUri: Uri, statusTime: Timestamp) {
 
         val storageRef =
             FirebaseStorage.getInstance().reference.child("Status").child(authInfo?.userid!!)
@@ -206,24 +203,28 @@ class Status : Fragment() {
             // Now you can retrieve the download URL to use in displaying the image
 
             storageRef.downloadUrl.addOnSuccessListener { uri: Uri ->
-                    // Save the download URL to Firebase Database or Firestore
-                    val imageUrl = uri.toString()
-                    imageRef = imageUrl
-                    val status = StatusModel(
-                        "${authInfo!!.firstname.toString()} ${authInfo!!.lastname.toString()}",
-                        authInfo!!.userid!!,
-                        imageRef,
-                        statusTime
-                    )
-                    fdb.document(References.getCurrentUserId()).set(status)
-                }
+                // Save the download URL to Firebase Database or Firestore
+                val imageUrl = uri.toString()
+                imageRef = imageUrl
+                val status = StatusModel(
+                    "${authInfo!!.firstname.toString()} ${authInfo!!.lastname.toString()}",
+                    authInfo!!.userid!!,
+                    imageRef,
+                    statusTime
+                )
+                FirebaseFirestore.getInstance().collection("All_Users_Status")
+                    .document(References.getCurrentUserId()).set(status)
+                    .addOnFailureListener {
+                        Toast.makeText(this.context, it.message, Toast.LENGTH_LONG).show()
+                    }
+            }
         }.addOnFailureListener {
             Toast.makeText(view?.context, " Failed to store image url", Toast.LENGTH_SHORT).show()
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun uploadBitmapToFirebase(bitmap: Bitmap, statusTime: String) {
+    private fun uploadBitmapToFirebase(bitmap: Bitmap, statusTime: Timestamp) {
         // Convert Bitmap to byte array
         val baos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
@@ -236,22 +237,23 @@ class Status : Fragment() {
             // Now you can retrieve the download URL to use in displaying the image
 
             storageRef.downloadUrl.addOnSuccessListener { uri: Uri ->
-                    // Save the download URL to Firebase Database or Firestore
-                    val imageUrl = uri.toString()
-                    imageRef = imageUrl
-                    val status = StatusModel(
-                        "${authInfo?.firstname.toString()} ${authInfo?.lastname.toString()}",
-                        authInfo?.userid!!,
-                        imageRef,
-                        statusTime
-                    )
-                    fdb.document(References.getCurrentUserId()).set(status)
-                }
+                // Save the download URL to Firebase Database or Firestore
+                val imageUrl = uri.toString()
+                imageRef = imageUrl
+                val status = StatusModel(
+                    "${authInfo?.firstname.toString()} ${authInfo?.lastname.toString()}",
+                    authInfo?.userid!!,
+                    imageRef,
+                    statusTime
+                )
+                fdb.document(References.getCurrentUserId()).set(status)
+                    .addOnFailureListener {
+                        Toast.makeText(this.context, it.message, Toast.LENGTH_LONG).show()
+                    }
+            }
         }.addOnFailureListener {
             Toast.makeText(view?.context, " Failed to store image bitmap", Toast.LENGTH_SHORT)
                 .show()
         }
-
     }
-
 }

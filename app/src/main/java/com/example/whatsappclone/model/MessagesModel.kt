@@ -1,5 +1,7 @@
 package com.example.whatsappclone.model
 
+import com.google.firebase.Timestamp
+
 class MessagesModel {
     var owner: String?= null
     var id: String ?= null
