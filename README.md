@@ -52,19 +52,27 @@ Firebase Authentication: For secure OTP-based phone number authentication, savin
 
 Usage Flow:
 
-User opens the WhatsApp Clone app.
-The splash screen with the app name and logo is displayed.
+User opens the WhatsApp Clone app and splash screen will display with the app name and logo.
+
 ![Screenshot_2024-06-23-22-04-22-475_com example whatsappclone 1](https://github.com/ArpitAswal/ChattingApplication/assets/87036588/1dce9510-f1b4-4e5a-bd7f-ab0d832cbf90)
 
-![Screenshot_2024-06-20-20-47-10-127_com example whatsappclone 1](https://github.com/ArpitAswal/ChattingApplication/assets/87036588/5c32c335-4ac9-4379-baaf-6809ae1e4d25)
+This screen will appear for the first time when the user have install the app or user does not sign-in yet 
 
 ![Screenshot_2024-06-20-20-46-47-797_com example whatsappclone 1](https://github.com/ArpitAswal/ChattingApplication/assets/87036588/1b17b4dd-409a-4d17-9469-b0ab1d0720ff)
 
-![Screenshot_2024-06-20-20-49-00-518_com example whatsappclone 1](https://github.com/ArpitAswal/ChattingApplication/assets/87036588/845fdcef-a781-4174-bed8-8414e89acefb)
+User can choose their own country language but for now this app served only English language
+
+![Screenshot_2024-06-20-20-47-10-127_com example whatsappclone 1](https://github.com/ArpitAswal/ChattingApplication/assets/87036588/5c32c335-4ac9-4379-baaf-6809ae1e4d25)
+
+After user select his/her country and write phone number user have to click on next button and then alert or confirm messgae will appear for confirmation of phone number
 
 ![Screenshot_2024-06-20-20-49-08-103_com example whatsappclone 1](https://github.com/ArpitAswal/ChattingApplication/assets/87036588/17feb557-c68f-4a53-82ab-2656ab1f9ce3)
 
+In this screen user will be recieving six digit OTP number on their sign in number and when the number is entered in the empty box it will authenticate OTP the number and user can get one more time OTP number by clicking on Resend SMS text
+
 ![Screenshot_2024-06-20-21-01-10-553_com example whatsappclone 1](https://github.com/ArpitAswal/ChattingApplication/assets/87036588/2e064d30-f890-4d50-8caf-45308487aa81)
+
+In this screen user have to enter his/her name for account(mandatory) and can set his/her own profile by camera or gallery(optional) and then click on continue button to navigate to home screen of this app
 
 ![Screenshot_2024-06-20-21-01-17-183_com example whatsappclone 1](https://github.com/ArpitAswal/ChattingApplication/assets/87036588/c6187ac2-f77f-470c-b7c8-77e0241b34c2)
 
