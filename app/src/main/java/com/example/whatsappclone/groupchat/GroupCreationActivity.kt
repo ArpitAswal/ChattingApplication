@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.FrameLayout
@@ -19,17 +20,26 @@ import com.example.whatsappclone.adapter.GridAdapter
 import com.example.whatsappclone.firebase.References
 import com.example.whatsappclone.model.ContactSaved
 import com.example.whatsappclone.model.GroupModel
+import com.example.whatsappclone.model.MessagesModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class GroupCreationActivity : AppCompatActivity() {
 
     private val capture = 1
     private val pick = 2
-
+    private lateinit var authUser: ContactSaved
+    private lateinit var rdb: DatabaseReference
     private lateinit var fdb: CollectionReference
     private lateinit var camera: FrameLayout
     private lateinit var gallery: FrameLayout
@@ -46,7 +56,10 @@ class GroupCreationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_group_creation)
-
+        CoroutineScope(Dispatchers.Main).launch {
+            // Call your suspend function within the coroutine
+            authUser = References.getCurrentAuthUserInfo()!!
+        }
         init()
         groupProfile.setOnClickListener {
             bottomSheetDialog.setContentView(bottomSheetView)
@@ -63,22 +76,35 @@ class GroupCreationActivity : AppCompatActivity() {
             bottomSheetDialog.show()
         }
         done.setOnClickListener {
+            val currentTime = Calendar.getInstance().time // Current time as Date object
+            val dateFormat = SimpleDateFormat("dd MMMM yyyy 'at' HH:mm:ss 'UTC'XXX", Locale.getDefault())
+            val timestamp = dateFormat.format(currentTime)
             membersList.add(0,firstMember)
             val groupData = GroupModel(
                 groupId, membersList, groupnameEdit.text.toString(), imageRef
             )
+            val model = MessagesModel(
+                "${authUser.firstname.toString()} ${authUser.lastname.toString()}",
+                authUser.userid!!,
+                "",
+                timestamp
+            )
+            rdb.child(groupId).push().setValue(model)
+            fdb.document(groupId).set(groupData)
             val nextIntent = Intent(this, GroupChatDetailActivity::class.java)
             nextIntent.putExtra("SelectedMembers", membersList)
             nextIntent.putExtra("GroupName", groupnameEdit.text.toString())
             nextIntent.putExtra("GroupImage",imageRef)
             nextIntent.putExtra("GroupId",groupId)
-            fdb.document(groupId).set(groupData)
+
             startActivity(nextIntent)
             finish()
         }
     }
 
     private fun init(){
+        rdb = References.getGroupRef()
+        fdb = References.getAllGroupsInfo()
         bottomSheetDialog = BottomSheetDialog(this)
         bottomSheetView = layoutInflater.inflate(R.layout.bottom_sheet, null)
         gallery = bottomSheetView.findViewById(R.id.gallery_layout)
@@ -95,7 +121,6 @@ class GroupCreationActivity : AppCompatActivity() {
         val gridView: GridView = findViewById(R.id.gridView)
         val adapter = GridAdapter(this, membersList) // Assume you have a list of users
         gridView.adapter = adapter
-        fdb = References.getAllGroupsInfo()
         firstMember = membersList.removeAt(0)
         membersCount.text = "Members: ${membersList.size}"
     }

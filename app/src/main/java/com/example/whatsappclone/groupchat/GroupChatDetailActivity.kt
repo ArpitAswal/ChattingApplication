@@ -44,9 +44,9 @@ class GroupChatDetailActivity : AppCompatActivity() {
     private lateinit var editMsg: EditText
     private lateinit var msgSend: FrameLayout
     private lateinit var rcv: RecyclerView
+    private lateinit var authUser: ContactSaved
     private lateinit var rdb: DatabaseReference
     private lateinit var fdb: CollectionReference
-    private lateinit var authUser: ContactSaved
     private var messageList = ArrayList<MessagesModel>()
     private var membersList = ArrayList<ContactSaved>()
     private var grpId = ""
@@ -58,16 +58,6 @@ class GroupChatDetailActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.Main).launch {
             // Call your suspend function within the coroutine
             authUser = References.getCurrentAuthUserInfo()!!
-            val currentTime = Calendar.getInstance().time // Current time as Date object
-            val dateFormat = SimpleDateFormat("dd MMMM yyyy 'at' HH:mm:ss 'UTC'XXX", Locale.getDefault())
-            val timestamp = dateFormat.format(currentTime)
-            val model = MessagesModel(
-                "${authUser.firstname.toString()} ${authUser.lastname.toString()}",
-                authUser.userid!!,
-                "",
-                timestamp
-            )
-            rdb.child(grpId).push().setValue(model)
         }
         init()
     }
@@ -113,10 +103,12 @@ class GroupChatDetailActivity : AppCompatActivity() {
                         val id: String? = data.child("id").getValue(String::class.java)
                         val msg: String? = data.child("msg").getValue(String::class.java)
                         val time: String? = data.child("time").getValue(String::class.java)
-                        val messageModel = MessagesModel(
-                            owner!!, id!!, msg!!, time!!
-                        )
-                        messageList.add(messageModel)
+                        if(!msg.isNullOrEmpty()) {
+                            val messageModel = MessagesModel(
+                                owner!!, id!!, msg, time!!
+                            )
+                            messageList.add(messageModel)
+                        }
                     }
                     rcv.adapter?.notifyDataSetChanged()
 

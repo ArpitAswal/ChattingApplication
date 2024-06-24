@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.whatsappclone.R
 import com.example.whatsappclone.firebase.References
 import com.example.whatsappclone.model.MessagesModel
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class GroupChatAdapter(private val dataList: List<MessagesModel>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -59,28 +61,29 @@ class GroupChatAdapter(private val dataList: List<MessagesModel>) :
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = dataList[position]
         val color  = getRandomColor()
+        val formatTime = formattedTime(item.time.toString())
 
         when (holder) {
             is ViewHolderType1 -> {
                 // Bind data for ViewHolderType1
                 // For example: holder.bind(dataList[position])
                 holder.senderMsg.text = item.msg
-                holder.senderTime.text = item.time.toString()
+                holder.senderTime.text = formatTime
             }
 
             is ViewHolderType2 -> {
                 // Bind data for ViewHolderType2
                 // For example: holder.bind(dataList[position])
-                holder.receiver_msg.text = item.msg
-                holder.receiver_time.text = item.time.toString()
-                holder.receiver_owner.text = item.owner.toString()
+                holder.receiverMsg.text = item.msg
+                holder.receiverTime.text = formatTime
+                holder.receiverOwner.text = item.owner.toString()
 
                 val contain = checkNameColor(item.owner.toString())
                 if(contain.first){
-                    holder.receiver_owner.setTextColor(contain.second)
+                    holder.receiverOwner.setTextColor(contain.second)
                 }
                 else {
-                    holder.receiver_owner.setTextColor(color)
+                    holder.receiverOwner.setTextColor(color)
                     mapsToAdd.add(hashMapOf(color to item.owner.toString())) // Collect modifications in separate list
                 }
 
@@ -107,9 +110,9 @@ class GroupChatAdapter(private val dataList: List<MessagesModel>) :
 
     inner class ViewHolderType2(itemView: View) : RecyclerView.ViewHolder(itemView) {
         // ViewHolder for item_layout_type2.xml
-        val receiver_msg: TextView = itemView.findViewById(R.id.group_receiver_msg_text)
-        val receiver_time: TextView = itemView.findViewById(R.id.group_receiver_time_text)
-        val receiver_owner: TextView = itemView.findViewById(R.id.group_msg_owner)
+        val receiverMsg: TextView = itemView.findViewById(R.id.group_receiver_msg_text)
+        val receiverTime: TextView = itemView.findViewById(R.id.group_receiver_time_text)
+        val receiverOwner: TextView = itemView.findViewById(R.id.group_msg_owner)
     }
 
     private fun getRandomColor(): Int {
@@ -120,5 +123,12 @@ class GroupChatAdapter(private val dataList: List<MessagesModel>) :
 
         // Combine RGB values into a single color integer
         return Color.rgb(r, g, b)
+    }
+
+    private fun formattedTime(date: String): String {
+        val inputFormat = SimpleDateFormat("dd MMMM yyyy 'at' HH:mm:ss 'UTC'XXX", Locale.getDefault())
+        val format = inputFormat.parse(date)
+        val outputFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
+        return outputFormat.format(format!!)
     }
 }

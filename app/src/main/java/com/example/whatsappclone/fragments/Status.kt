@@ -74,6 +74,12 @@ class Status : Fragment() {
             layoutManager = LinearLayoutManager(view.context)
             adapter = statusAdapter
         }
+
+        CoroutineScope(Dispatchers.Main).launch {
+            // Call your suspend function within the coroutine
+            authInfo = References.getCurrentAuthUserInfo()!!
+            Glide.with(view.context).load(authInfo!!.dp).error(R.drawable.avatar).into(authDp)
+        }
         return view
     }
 
@@ -83,11 +89,10 @@ class Status : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         fdb = References.getStatusReference()
+
         CoroutineScope(Dispatchers.Main).launch {
             // Call your suspend function within the coroutine
             authInfo = References.getCurrentAuthUserInfo()!!
-            Glide.with(view.context).load(authInfo!!.dp).error(R.drawable.avatar).into(authDp)
-
             fdb.orderBy("time").addSnapshotListener { value, error ->
                 if (error != null) {
                     // Handle error
@@ -104,7 +109,9 @@ class Status : Fragment() {
                                 val differenceInMillis = currentTime.time - statusTime.time
                                 val hoursDifference = differenceInMillis / (1000 * 60 * 60)
                                 if (hoursDifference >= 24) {
-                                    Glide.with(view.context).load(authInfo?.dp).error(R.drawable.avatar).into(authDp)
+                                    Glide.with(view.context).load(authInfo?.dp)
+                                        .error(R.drawable.avatar)
+                                        .into(authDp)
                                     References.statusRemoveFromDB(status.userId)
                                 } else {
                                     if (status.userId.equals(authInfo?.userid)) {
@@ -128,9 +135,7 @@ class Status : Fragment() {
                     statusAdapter.notifyDataSetChanged()
                 }
             }
-
         }
-
         // Set up click listener for FAB to add new status
         fabAddStatus.setOnClickListener {
             // Navigate to activity to add new status
@@ -176,15 +181,12 @@ class Status : Fragment() {
             when (requestCode) {
                 capture -> {
                     val imageBitmap = data?.extras?.get("data") as Bitmap
-                    //authDp.setImageBitmap(imageBitmap)
-                    // Do something with the captured image bitmap
                     uploadBitmapToFirebase(imageBitmap, timestamp)
                 }
 
                 pick -> {
                     val selectedImageUri = data?.data
                     if (selectedImageUri != null) {
-                        //authDp.setImageURI(selectedImageUri)
                         uploadImageToFirebase(selectedImageUri, timestamp)
                     }
                 }
@@ -199,8 +201,6 @@ class Status : Fragment() {
             FirebaseStorage.getInstance().reference.child("Status").child(authInfo?.userid!!)
         val uploadTask = storageRef.putFile(imageUri)
         uploadTask.addOnSuccessListener {
-            // Image uploaded successfully
-            // Now you can retrieve the download URL to use in displaying the image
 
             storageRef.downloadUrl.addOnSuccessListener { uri: Uri ->
                 // Save the download URL to Firebase Database or Firestore
@@ -212,9 +212,8 @@ class Status : Fragment() {
                     imageRef,
                     statusTime
                 )
-                FirebaseFirestore.getInstance().collection("All_Users_Status")
-                    .document(References.getCurrentUserId()).set(status)
-                    .addOnFailureListener {
+
+                fdb.document(References.getCurrentUserId()).set(status).addOnFailureListener {
                         Toast.makeText(this.context, it.message, Toast.LENGTH_LONG).show()
                     }
             }
@@ -246,8 +245,7 @@ class Status : Fragment() {
                     imageRef,
                     statusTime
                 )
-                fdb.document(References.getCurrentUserId()).set(status)
-                    .addOnFailureListener {
+                fdb.document(References.getCurrentUserId()).set(status).addOnFailureListener {
                         Toast.makeText(this.context, it.message, Toast.LENGTH_LONG).show()
                     }
             }

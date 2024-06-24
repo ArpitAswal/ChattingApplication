@@ -2,13 +2,16 @@ package com.example.whatsappclone.fragments
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.MediatorLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,9 +28,14 @@ import com.example.whatsappclone.model.ListType
 import com.example.whatsappclone.model.UserModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.Timestamp
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 class Chats : Fragment() {
     private var dataList = mutableListOf<UserModel>()
+    private val mediatorLiveData = MediatorLiveData<List<UserModel>>()
+    private val receiverDataList = mutableListOf<UserModel>()
+    private val groupsDataList = mutableListOf<UserModel>()
     private lateinit var rcv: RecyclerView
     private lateinit var mAddFab: FloatingActionButton
 
@@ -65,12 +73,10 @@ class Chats : Fragment() {
                 startActivity(intent)
 
             }
-        }
-        )
+        })
         return view
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -83,10 +89,6 @@ class Chats : Fragment() {
 
             startActivity(Intent(view.context, ContactActivity::class.java))
         }
-        val mediatorLiveData = MediatorLiveData<List<UserModel>>()
-
-        val receiverDataList = mutableListOf<UserModel>()
-        val groupsDataList = mutableListOf<UserModel>()
 
         mediatorLiveData.addSource(References.receiverList) { receiverList ->
             receiverDataList.clear() // Clear the list before updating with new data
@@ -112,12 +114,13 @@ class Chats : Fragment() {
                             if (chatSnapshot != null) {
                                 val firstChild = chatSnapshot.children.last()
                                 val lastMsg =
-                                    firstChild.child("msg").getValue(String::class.java).toString()
+                                    firstChild.child("msg").getValue(String::class.java)
+                                        .toString()
                                 user.userLastMsg = lastMsg
-                                user.chatTime = firstChild.child("time").getValue(String::class.java)!!
+                                user.chatTime =
+                                    firstChild.child("time").getValue(String::class.java)!!
+
                                 receiverDataList.add(user) // Add the updated user to the receiverDataList
-                                mediatorLiveData.value =
-                                    receiverDataList // Update mediatorLiveData with the new list
                             }
                         }
                     } else if (error != null) {
@@ -151,15 +154,18 @@ class Chats : Fragment() {
 
                             rdb.child(stringData).get().addOnSuccessListener { chatSnapshot ->
                                 if (chatSnapshot != null) {
-                                    val firstChild = chatSnapshot.children.last()
-                                    val lastMsg =
-                                        firstChild.child("msg").getValue(String::class.java)
-                                            .toString()
-                                    user.userLastMsg = lastMsg
-                                    user.chatTime = firstChild.child("time").getValue(String::class.java)!!
+                                    val childrenList = chatSnapshot.children.toList()
+                                    for (lastChild in childrenList.reversed()) {
+                                        user.userLastMsg =
+                                            lastChild.child("msg").getValue(String::class.java)
+                                                .toString()
+                                        user.chatTime =
+                                            lastChild.child("time").getValue(String::class.java)!!
+                                        if (user.userLastMsg.isNotEmpty())
+                                            break
+                                    }
                                     groupsDataList.add(user) // Add the updated user to the groupsDataList
-                                    mediatorLiveData.value =
-                                        groupsDataList // Update mediatorLiveData with the new list
+                                    mediatorLiveData.value = receiverDataList + groupsDataList// Update mediatorLiveData with the new list
                                 }
                             }
                         }
@@ -167,15 +173,23 @@ class Chats : Fragment() {
                 }
             }
         }
+    }
 
+    @SuppressLint("NotifyDataSetChanged")
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onStart() {
+        super.onStart()
         mediatorLiveData.observe(viewLifecycleOwner) {
             // Combine receiverDataList and groupsDataList and update RecyclerView adapter with combined list
+            val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy 'at' HH:mm:ss 'UTC'XXX")
             dataList.clear()
             dataList.addAll(receiverDataList)
             dataList.addAll(groupsDataList)
+            dataList.sortByDescending{
+                ZonedDateTime.parse(it.chatTime, formatter)
+            }
             rcv.adapter?.notifyDataSetChanged() // Assuming you're using ListAdapter or RecyclerView.Adapter with DiffUtil
         }
-
     }
 }
 
