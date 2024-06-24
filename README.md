@@ -85,10 +85,3 @@ User can upload a only status image, for now user can not upload status video al
 User can simulate audio or video calls with fake contacts from the call screen.
 
 ![Screenshot_2024-06-24-22-20-52-077_com example whatsappclone 1](https://github.com/ArpitAswal/ChattingApplication/assets/87036588/a183c1e9-fd06-4eff-a864-d8751409d9ed)
-
-![Screenshot_2024-06-24-16-15-50-344_com example whatsappclone 1](https://github.com/ArpitAswal/ChattingApplication/assets/87036588/f6403978-3c07-4f11-8dd0-34ee79869efb)
-
-
-
-
-
