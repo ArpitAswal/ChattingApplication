@@ -2,22 +2,22 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_marginTop="5dp"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="5dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/sender_constraintLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
+        android:layout_marginVertical="4dp"
         android:layout_marginStart="0dp"
-        android:layout_marginVertical="3dp"
         android:layout_marginEnd="8dp"
-        android:paddingVertical="4dp"
         android:background="@drawable/sender_chat_background"
+        android:maxWidth="350dp"
         android:minWidth="100dp"
-        android:maxWidth="350dp">
+        android:paddingVertical="4dp">
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline1"
@@ -31,29 +31,29 @@
             android:id="@+id/sender_msg_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hello!"
-            android:textSize="15sp"
-            android:maxWidth="280dp"
-            android:textColor="@color/black"
-            android:textAlignment="viewStart"
+            android:layout_marginStart="8dp"
             android:inputType="textLongMessage|textMultiLine"
+            android:maxWidth="280dp"
+            android:text="Hello!"
+            android:textAlignment="viewStart"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toStartOf="@id/sender_time_text"
             app:layout_constraintStart_toStartOf="@+id/sender_constraintLayout"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/sender_time_text"
-            android:layout_marginStart="8dp"
             tools:ignore="TextViewEdits" />
 
         <TextView
             android:id="@+id/sender_time_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="2dp"
             android:layout_weight="1"
             android:text="12:00pm"
-            android:textSize="11sp"
             android:textColor="@color/grey"
-            android:layout_marginEnd="2dp"
+            android:textSize="11sp"
             app:layout_constraintEnd_toStartOf="@id/guideline1"
-            app:layout_constraintTop_toBottomOf="@id/sender_msg_text"/>
+            app:layout_constraintTop_toBottomOf="@id/sender_msg_text" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </RelativeLayout>

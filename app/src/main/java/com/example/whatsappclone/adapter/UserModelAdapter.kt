@@ -15,7 +15,8 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
-class UserModelAdapter(private val dataList: List<UserModel>) : RecyclerView.Adapter<UserModelAdapter.ViewHolder>() {
+class UserModelAdapter(private val dataList: List<UserModel>) :
+    RecyclerView.Adapter<UserModelAdapter.ViewHolder>() {
 
     private var onClickListener: OnClickListener? = null
     private var onGroupClickListener: OnGroupClickListener? = null
@@ -26,6 +27,7 @@ class UserModelAdapter(private val dataList: List<UserModel>) : RecyclerView.Ada
     fun setOnGroupClickListener(listener: OnGroupClickListener) {
         this.onGroupClickListener = listener
     }
+
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val profile: CircleImageView = itemView.findViewById(R.id.profileImage)
         val name: TextView = itemView.findViewById(R.id.username)
@@ -34,7 +36,8 @@ class UserModelAdapter(private val dataList: List<UserModel>) : RecyclerView.Ada
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.user_display_chatscreen,parent,false)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.user_display_chatscreen, parent, false)
         return ViewHolder(view)
     }
 
@@ -44,20 +47,25 @@ class UserModelAdapter(private val dataList: List<UserModel>) : RecyclerView.Ada
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val individualUser = dataList[position]
-        if(individualUser.profileImg.isNotEmpty()) {
+        if (individualUser.profileImg.isNotEmpty()) {
             Glide.with(holder.itemView.context).load(individualUser.profileImg).into(holder.profile)
         }
         holder.name.text = individualUser.username
         holder.msg.visibility = View.VISIBLE
         holder.msg.text = individualUser.userLastMsg
-        holder.chatTime.text = formattedDate(individualUser.chatTime)
+        if (individualUser.userLastMsg.isNotEmpty()) {
+            holder.chatTime.text = formattedDate(individualUser.chatTime)
+        } else {
+            holder.chatTime.text = ""
+        }
         holder.itemView.setOnClickListener {
             when (individualUser.source) {
-                ListType.Individual ->  if(onClickListener!=null){
-                    onClickListener!!.onClick(position,individualUser)
+                ListType.Individual -> if (onClickListener != null) {
+                    onClickListener!!.onClick(position, individualUser)
                 }
-                ListType.Group ->  if(onGroupClickListener!=null){
-                    onGroupClickListener!!.onGroupClick(position,individualUser)
+
+                ListType.Group -> if (onGroupClickListener != null) {
+                    onGroupClickListener!!.onGroupClick(position, individualUser)
                 }
             }
         }
@@ -75,7 +83,8 @@ class UserModelAdapter(private val dataList: List<UserModel>) : RecyclerView.Ada
     private fun formattedDate(dateString: String): String? {
         try {
             // Define the input date format
-            val inputFormat = SimpleDateFormat("dd MMMM yyyy 'at' HH:mm:ss 'UTC'XXX", Locale.getDefault())
+            val inputFormat =
+                SimpleDateFormat("dd MMMM yyyy 'at' HH:mm:ss 'UTC'XXX", Locale.getDefault())
             inputFormat.timeZone = TimeZone.getTimeZone("UTC")
 
             // Parse the input date string

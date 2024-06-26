@@ -1,76 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/chatbox_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/chatbox_layout"
     android:orientation="horizontal">
 
     <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        >
+        android:layout_marginStart="5dp">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/profileImage"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginStart="5dp"
-        android:padding="5dp"
-        android:src="@drawable/avatar"
-        app:civ_border_color="@color/white"
-        app:civ_border_width="1.5dp" />
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profileImage"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="5dp"
+            android:padding="5dp"
+            android:src="@drawable/avatar"
+            app:civ_border_color="@color/white"
+            app:civ_border_width="1.5dp" />
 
-    <ImageView
-        android:id="@+id/select_contact"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/check_circle"
-        android:visibility="gone"
-        android:layout_gravity="end|bottom">
+        <ImageView
+            android:id="@+id/select_contact"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:src="@drawable/check_circle"
+            android:visibility="gone">
 
-    </ImageView>
+        </ImageView>
 
     </FrameLayout>
 
     <LinearLayout
         android:layout_width="0dp"
-        android:layout_weight="1"
         android:layout_height="match_parent"
-        android:layout_marginHorizontal="8dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_weight="1"
         android:gravity="center"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/username"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:text="User Name"
-            android:textSize="16sp"
-            android:textColor="@color/black"
-            android:textStyle="bold" />
+            android:gravity="top"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/username"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="User Name"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/dateTimeTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/user_lastmsg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Last Msg"
-            android:visibility="gone"
+            android:ellipsize="end"
             android:maxLines="1"
-            android:ellipsize="end"/>
+            android:text="Last Msg"
+            android:visibility="gone" />
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/dateTimeTV"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:layout_marginTop="8dp"
-        android:textColor="@color/black"
-        android:textSize="13sp"
-        android:layout_marginEnd="10dp"/>
 </LinearLayout>
