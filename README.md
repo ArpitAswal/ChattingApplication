@@ -39,8 +39,12 @@ Custom contacts can be created but do not support interactive chatting.
 Future Updates:
 
 Enhanced Status Feature: Plans to support multiple statuses, view statuses in a new frame, and allow video uploads.
+
 Search Functionality: To help users quickly find contacts, messages, or groups.
+
 Settings Feature: To provide users with more customization options and improve user-friendliness.
+
+Media Sharing: To share images, videos, pdf, gif etc with other users
 
 Technologies Used:
 
