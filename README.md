@@ -34,17 +34,25 @@ A smooth transition splash screen displays the app name and logo upon launching.
 Contact Management:
 
 Users can only see contacts who have signed in to the app.
-Custom contacts can be created but do not support interactive chatting.
+Custom contacts can be created but does not support interactive chatting.
+
+Delete Feature:
+
+Users can delete their own chats from own account or both own and other chatting user account by "Delete for me" or "Delete for everyone".
+Users can delete other chatting users chats only from their own account.
+Users can delete whole chat box only from their own account.
 
 Future Updates:
 
-Enhanced Status Feature: Plans to support multiple statuses, view statuses in a new frame, and allow video uploads.
-
 Search Functionality: To help users quickly find contacts, messages, or groups.
 
-Settings Feature: To provide users with more customization options and improve user-friendliness.
+Settings/More options Feature: To provide users with more customization options and improve user-friendliness.
 
-Media Sharing: To share images, videos, pdf, gif etc with other users
+Leave functionality: Users for now can not leave from the group in which they add because more options feature not implemented yet but they can delete whole group chat box from their own account.
+
+Media Sharing: To share images, videos, pdf, gif etc with other users.
+
+Enhanced Status Feature: Plans to support multiple statuses, view statuses in a new frame, and allow video uploads.
 
 Technologies Used:
 
