@@ -16,6 +16,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.whatsappclone.HomeActivity
 import com.example.whatsappclone.groupchat.ChatDetailActivity
 import com.example.whatsappclone.R
 import com.example.whatsappclone.adapter.UserModelAdapter
@@ -25,12 +26,26 @@ import com.example.whatsappclone.groupchat.GroupChatDetailActivity
 import com.example.whatsappclone.model.ContactSaved
 import com.example.whatsappclone.model.GroupModel
 import com.example.whatsappclone.model.ListType
+import com.example.whatsappclone.model.MessagesModel
 import com.example.whatsappclone.model.UserModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 class Chats : Fragment() {
+
+    companion object {
+        private var instance: Chats? = null
+
+        fun getInstance(): Chats? {
+            return instance
+        }
+    }
+
     private var dataList = mutableListOf<UserModel>()
     private val mediatorLiveData = MediatorLiveData<List<UserModel>>()
     private val receiverDataList = mutableListOf<UserModel>()
@@ -38,7 +53,9 @@ class Chats : Fragment() {
     private lateinit var rcv: RecyclerView
     private lateinit var mAddFab: FloatingActionButton
     private val addedSources = mutableSetOf<LiveData<*>>()
-    private var count = 0
+    private val homeActivity = HomeActivity.getInstance()
+    private lateinit var rdb: DatabaseReference
+    lateinit var adapter: UserModelAdapter
 
     private val receiverObserver = { receiverList: List<String> ->
         receiverDataList.clear() // Clear the list before updating with new data
@@ -129,10 +146,13 @@ class Chats : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_chats, container, false)
         rcv = view.findViewById(R.id.recView)
-        val adapter = UserModelAdapter(dataList)
+        adapter = UserModelAdapter(dataList)
         rcv.adapter = adapter
         val layout = LinearLayoutManager(view.context)
         rcv.layoutManager = layout
+        rdb = References.getChatsRef()
+        instance = this
+
         adapter.setOnClickListener(object : UserModelAdapter.OnClickListener {
             override fun onClick(position: Int, individualUser: UserModel) {
                 val intent = Intent(view.context, ChatDetailActivity::class.java)
@@ -153,6 +173,19 @@ class Chats : Fragment() {
                 startActivity(intent)
             }
         })
+
+        adapter.setOnItemLongClickListener { selectedCount ->
+            HomeActivity().updateToolbar(selectedCount)
+        }
+
+        adapter.setOnItemClickListener {
+            if (adapter.getSelectedInbox().isEmpty()) {
+                adapter.clearSelections()
+                homeActivity?.defaultToolbar()
+            } else {
+                homeActivity?.updateToolbar(adapter.getSelectedInbox().size)
+            }
+        }
         return view
     }
 
@@ -167,8 +200,11 @@ class Chats : Fragment() {
 
             startActivity(Intent(view.context, ContactActivity::class.java))
         }
-
         addSourcesIfNotAdded()
+    }
+
+    fun adapterClearSelection() {
+        adapter.clearSelections()
     }
 
     private fun addSourcesIfNotAdded() {
@@ -187,7 +223,6 @@ class Chats : Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onStart() {
         super.onStart()
-        count++
         mediatorLiveData.observe(viewLifecycleOwner) {
             // Combine receiverDataList and groupsDataList and update RecyclerView adapter with combined list
             val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy 'at' HH:mm:ss 'UTC'XXX")
@@ -198,6 +233,38 @@ class Chats : Fragment() {
                 ZonedDateTime.parse(it.chatTime, formatter)
             }
             rcv.adapter?.notifyDataSetChanged()
+        }
+    }
+
+    fun deleteChatBoxes() {
+        val chatBoxIds = mutableListOf<String>()
+        val selectedInbox = adapter.getSelectedInbox().toMutableSet()
+        for (id in selectedInbox) {
+            chatBoxIds.add(id.userId)
+        }
+        var count = 0
+
+        rdb.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                snapshot.children.forEach { id ->
+                    val currentChatId = id.key!!.split(" ")[1]
+                    if (chatBoxIds.contains(currentChatId)) {
+                        count++
+                        snapshot.child(id.key!!).ref
+                            .removeValue().addOnSuccessListener {
+                                adapter.clearSelections()
+                            }
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
+        if (selectedInbox.size == count) {
+            homeActivity?.defaultToolbar()
+            selectedInbox.clear()
         }
     }
 }

@@ -32,6 +32,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 class ChatDetailActivity : AppCompatActivity() {
@@ -110,6 +111,7 @@ class ChatDetailActivity : AppCompatActivity() {
                             rcv.adapter?.notifyDataSetChanged()
                         }
                     }
+
                 } else {
                     val timestamp = getTimestamp()
                     val model = MessagesModel(
