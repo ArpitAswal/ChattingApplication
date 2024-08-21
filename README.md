@@ -1,4 +1,4 @@
-WhatsApp Clone is a mobile messaging application that mimics the core functionalities and user interface of the original WhatsApp. The app provides a robust platform for secure messaging, group chats, and status updates, along with an OTP-based phone number authentication system. While still in development, the app aims to deliver a seamless user experience with essential communication features.
+Chat App is a mobile messaging application that mimics the core functionalities and user interface of the original WhatsApp. The app provides a robust platform for secure messaging, group chats, and status updates, along with an OTP-based phone number authentication system. While still in development, the app aims to deliver a seamless user experience with essential communication features.
 
 Features:
 
